@@ -26,27 +26,99 @@
         
         /* Fix rank badge contrast */
         .rank-badge { background-color: #2f2f2f !important; color: white !important; }
+        
+        /* Mobile responsiveness */
+        .mobile-sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .mobile-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        @media (max-width: 767px) {
+            .sidebar-fixed {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 40;
+            }
+            .main-content-mobile {
+                padding-left: 0;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .mobile-sidebar {
+                transform: translateX(0) !important;
+            }
+            .mobile-overlay {
+                display: none;
+            }
+        }
+        
+        /* Touch-friendly interactions */
+        .touch-friendly {
+            min-height: 44px;
+        }
+        
+        @media (hover: none) and (pointer: coarse) {
+            .hover\:bg-gray-100:hover {
+                background-color: transparent;
+            }
+            .touch-friendly:active {
+                background-color: #f3f4f6;
+            }
+        }
     </style>
 </head>
 <body class="bg-custom">
+    <!-- Mobile menu button -->
+    <div class="md:hidden fixed top-4 left-4 z-50">
+        <button id="mobile-menu-btn" class="p-2 bg-white border border-custom rounded-lg shadow-sm">
+            <i data-lucide="menu" class="w-6 h-6 text-custom"></i>
+        </button>
+    </div>
+    
+    <!-- Mobile overlay -->
+    <div id="mobile-overlay" class="mobile-overlay" onclick="closeMobileMenu()"></div>
+    
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-white border-r border-custom p-6">
+        <div id="sidebar" class="w-64 bg-white border-r border-custom p-6 md:relative md:translate-x-0 sidebar-fixed mobile-sidebar">
             <div class="mb-8">
                 <h2 class="text-xl font-bold text-custom">Procurify GEO</h2>
                 <p class="text-sm text-muted">Brand Intelligence</p>
             </div>
             
             <nav class="space-y-2">
-                <button onclick="showTab('overview')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3 active">
+                <button onclick="showTab('overview')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 active touch-friendly">
                     <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
                     Overview
                 </button>
-                <button onclick="showTab('competitors')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                <button onclick="showTab('competitors')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 touch-friendly">
                     <i data-lucide="users" class="w-5 h-5"></i>
                     Competitors
                 </button>
-                <button onclick="showTab('insights')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                <button onclick="showTab('insights')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 touch-friendly">
                     <i data-lucide="trending-up" class="w-5 h-5"></i>
                     Insights
                 </button>
@@ -54,10 +126,10 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
+        <div class="flex-1 overflow-auto main-content-mobile md:ml-0">
             <!-- Overview Tab -->
             <div id="overview-tab" class="tab-content">
-                <div class="max-w-6xl mx-auto p-8">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
                     <!-- Header -->
                     <div class="mb-8">
                         <div class="flex items-center gap-2 mb-2">
@@ -65,15 +137,15 @@
                                 BRAND PERFORMANCE
                             </span>
                         </div>
-                        <h1 class="text-3xl font-bold text-custom mb-2">Performance snapshot</h1>
-                        <p class="text-xl text-muted">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-custom mb-2">Performance snapshot</h1>
+                        <p class="text-lg sm:text-xl text-muted">
                             Tracked across AI search platforms in the procurement software category
                         </p>
                     </div>
 
                     <!-- Expert Analysis -->
-                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
-                        <div class="text-gray-700 text-lg leading-relaxed space-y-4">
+                    <div class="mb-8 p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                        <div class="text-gray-700 text-base sm:text-lg leading-relaxed space-y-4">
                             <p>
                                 <strong>Procurify's footprint inside ChatGPT's procurement-software answers is limited and uneven.</strong> Out of 13 high-intent query groups, the brand surfaces only 4 times (30.8% query coverage) with an average rank of 8 and an overall share-of-voice of 3.1%.
                             </p>
@@ -94,8 +166,8 @@
                         <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
                             OVERALL PERFORMANCE
                         </span>
-                        <div class="grid grid-cols-3 gap-12">
-                            <div class="p-6 bg-white border border-custom rounded-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
                                 <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
                                     <div class="flex items-end gap-1">
                                         <span class="text-6xl font-bold text-custom">30.8</span>
@@ -109,7 +181,7 @@
                                 <p class="text-sm italic text-muted">Frequency of brand mentions in AI responses</p>
                             </div>
                             
-                            <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
                                 <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
                                     <div class="flex items-end gap-1">
                                         <span class="text-6xl font-bold text-custom">8.0</span>
@@ -123,7 +195,7 @@
                                 <p class="text-sm italic text-muted">Average position in ranked responses (when mentioned)</p>
                             </div>
                             
-                            <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
                                 <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
                                     <div class="flex items-end gap-1">
                                         <span class="text-6xl font-bold text-custom">3.1</span>
@@ -140,43 +212,43 @@
                     </div>
 
                     <!-- Competitor Analysis -->
-                    <div class="mb-8 p-8 bg-white border border-custom rounded-lg">
-                        <div class="space-y-6">
-                            <div class="flex items-center gap-4">
-                                <div class="bg-beige-custom rounded-r-full py-3 px-12 flex items-center justify-center" style="width: 369px;">
-                                    <span class="text-base font-semibold text-custom">92.3%</span>
+                    <div class="mb-8 p-4 sm:p-8 bg-white border border-custom rounded-lg">
+                        <div class="space-y-6 overflow-x-auto">
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-beige-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(369px, 70vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">92.3%</span>
                                 </div>
-                                <span class="text-base font-bold text-custom">SAP Ariba</span>
+                                <span class="text-sm sm:text-base font-bold text-custom truncate">SAP Ariba</span>
                             </div>
-                            <div class="flex items-center gap-4">
-                                <div class="bg-purple-custom rounded-r-full py-3 px-12 flex items-center justify-center" style="width: 369px;">
-                                    <span class="text-base font-semibold text-custom">92.3%</span>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-purple-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(369px, 70vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">92.3%</span>
                                 </div>
-                                <span class="text-base font-medium text-muted">Coupa</span>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">Coupa</span>
                             </div>
-                            <div class="flex items-center gap-4">
-                                <div class="bg-blue-custom rounded-r-full py-3 px-12 flex items-center justify-center" style="width: 338px;">
-                                    <span class="text-base font-semibold text-custom">84.6%</span>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-blue-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(338px, 60vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">84.6%</span>
                                 </div>
-                                <span class="text-base font-medium text-muted">Basware</span>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">Basware</span>
                             </div>
-                            <div class="flex items-center gap-4">
-                                <div class="bg-green-custom rounded-r-full py-3 px-12 flex items-center justify-center" style="width: 308px;">
-                                    <span class="text-base font-semibold text-custom">76.9%</span>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-green-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(308px, 50vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">76.9%</span>
                                 </div>
-                                <span class="text-base font-medium text-muted">GEP SMART</span>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">GEP SMART</span>
                             </div>
-                            <div class="flex items-center gap-4">
-                                <div class="bg-gray-300 rounded-r-full py-3 px-12 flex items-center justify-center" style="width: 308px;">
-                                    <span class="text-base font-semibold text-custom">76.9%</span>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-gray-300 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(308px, 50vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">76.9%</span>
                                 </div>
-                                <span class="text-base font-medium text-muted">Ivalua</span>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">Ivalua</span>
                             </div>
-                            <div class="flex items-center gap-4">
-                                <div class="bg-yellow-custom rounded-r-full py-3 px-12 flex items-center justify-center" style="width: 123px;">
-                                    <span class="text-base font-semibold text-custom">30.8%</span>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-yellow-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(123px, 25vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">30.8%</span>
                                 </div>
-                                <span class="text-base font-bold text-custom">Procurify</span>
+                                <span class="text-sm sm:text-base font-bold text-custom truncate">Procurify</span>
                             </div>
                             <div class="border-t border-dashed border-custom pt-4">
                                 <p class="text-sm italic text-muted text-center">Mention rates (Top 5 competitors + Procurify)</p>
@@ -406,7 +478,7 @@
 
             <!-- Competitors Tab -->
             <div id="competitors-tab" class="tab-content hidden">
-                <div class="max-w-6xl mx-auto p-8">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
                     <div class="mb-8">
                         <h1 class="text-3xl font-bold text-custom mb-2">Competitor Intelligence</h1>
                         <p class="text-xl text-muted">Strategic analysis of how competitors perform across AI platforms</p>
@@ -429,7 +501,7 @@
                     </div>
 
                     <!-- Top Competitors Grid -->
-                    <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                         <!-- SAP Ariba -->
                         <div class="p-6 bg-white border border-custom rounded-lg">
                             <div class="flex items-start justify-between mb-4">
@@ -781,7 +853,7 @@
 
             <!-- Insights Tab -->
             <div id="insights-tab" class="tab-content hidden">
-                <div class="max-w-6xl mx-auto p-8">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
                     <div class="mb-8">
                         <h1 class="text-3xl font-bold text-custom mb-2">Expert Insights & Reports</h1>
                         <p class="text-xl text-muted">AI-powered recommendations from our procurement marketing experts</p>
@@ -818,7 +890,7 @@
                     <!-- Strategic Insights -->
                     <div class="mb-8">
                         <h2 class="text-2xl font-bold text-custom mb-6">Strategic Insights</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 gap-6">
                             <!-- Critical Insight -->
                             <div class="p-6 bg-white border-2 border-red-200 rounded-lg">
                                 <div class="flex items-start gap-4 mb-4">
@@ -997,7 +1069,7 @@
                     <!-- KPI Projections -->
                     <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
                         <h2 class="text-xl font-bold text-custom mb-6">6-Month Performance Projections</h2>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div class="text-center">
                                 <h3 class="text-sm font-medium text-muted mb-2">AI Mention Rate</h3>
                                 <div class="space-y-1">
@@ -1082,6 +1154,23 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        
         // Tab switching functionality
         function showTab(tabName) {
             // Hide all tabs
@@ -1100,6 +1189,11 @@
             // Add active class to clicked button
             event.target.classList.add('active', 'bg-gray-100');
             
+            // Close mobile menu after tab selection
+            if (window.innerWidth < 768) {
+                closeMobileMenu();
+            }
+            
             // Re-initialize icons for newly shown content
             lucide.createIcons();
         }
@@ -1107,6 +1201,9 @@
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
+            
+            // Mobile menu button event listener
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
         });
     </script>
 </body>
