@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Disco GEO Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .bg-custom { background-color: #f8f4f0; }
+        .text-custom { color: #2f2f2f; }
+        .text-muted { color: #6c6e76; }
+        .border-custom { border-color: #e0cbb5; }
+        .bg-yellow-custom { background-color: #dfe34e; }
+        .bg-green-custom { background-color: #b1dbc3; }
+        .bg-beige-custom { background-color: #e2dbcd; }
+        .bg-purple-custom { background-color: #daa6de; }
+        .bg-blue-custom { background-color: #a1c5ff; }
+        .bg-disco-purple { background-color: #8b5cf6; }
+        .bg-disco-light { background-color: #ede9fe; }
+        
+        /* Fix button contrast */
+        .btn-primary { background-color: #2f2f2f; color: white; }
+        .btn-primary:hover { background-color: #1a1a1a; }
+        
+        /* Fix badge contrast */
+        .badge-insight { color: #2f2f2f !important; font-weight: 600; }
+        
+        /* Fix rank badge contrast */
+        .rank-badge { background-color: #2f2f2f !important; color: white !important; }
+        
+        /* Mobile responsiveness */
+        .mobile-sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .mobile-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        @media (max-width: 767px) {
+            .sidebar-fixed {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 40;
+            }
+            .main-content-mobile {
+                padding-left: 0;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .mobile-sidebar {
+                transform: translateX(0) !important;
+            }
+            .mobile-overlay {
+                display: none;
+            }
+        }
+        
+        /* Touch-friendly interactions */
+        .touch-friendly {
+            min-height: 44px;
+        }
+        
+        @media (hover: none) and (pointer: coarse) {
+            .hover\:bg-gray-100:hover {
+                background-color: transparent;
+            }
+            .touch-friendly:active {
+                background-color: #f3f4f6;
+            }
+        }
+
+        /* Enhanced styling for opportunity cards */
+        .opportunity-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .opportunity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-custom">
+    <!-- Mobile menu button -->
+    <div class="md:hidden fixed top-4 left-4 z-50">
+        <button id="mobile-menu-btn" class="p-2 bg-white border border-custom rounded-lg shadow-sm touch-friendly">
+            <i data-lucide="menu" class="w-6 h-6 text-custom"></i>
+        </button>
+    </div>
+    
+    <!-- Mobile overlay -->
+    <div id="mobile-overlay" class="mobile-overlay" onclick="closeMobileMenu()"></div>
+    
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-white border-r border-custom p-6 md:relative md:translate-x-0 sidebar-fixed mobile-sidebar overflow-y-auto">
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-custom">Enhanced Disco GEO</h2>
+                <p class="text-sm text-muted">Advanced Brand Intelligence</p>
+            </div>
+            
+            <nav class="space-y-2">
+                <button onclick="showTab('overview')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3 active">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    Overview
+                </button>
+                <button onclick="showTab('competitors')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    Competitors
+                </button>
+                <button onclick="showTab('opportunities')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="target" class="w-5 h-5"></i>
+                    Opportunities
+                </button>
+                <button onclick="showTab('recommendations')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                    Recommendations
+                </button>
+                <button onclick="showTab('analytics')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="bar-chart" class="w-5 h-5"></i>
+                    Advanced Analytics
+                </button>
+                <button onclick="showTab('insights')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+                    Expert Insights
+                </button>
+            </nav>
+
+            <!-- Quick Stats Sidebar -->
+            <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-sm font-semibold text-custom mb-3">Quick Stats</h3>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-muted">Current Mention Rate:</span>
+                        <span class="font-bold text-red-600">8.3%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">Target (6mo):</span>
+                        <span class="font-bold text-green-600">35%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">Categories Covered:</span>
+                        <span class="font-bold">1/12</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">High-Value Opportunities:</span>
+                        <span class="font-bold text-blue-600">6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto main-content-mobile md:ml-0">
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <!-- Enhanced Header with Executive Summary -->
+                    <div class="mb-8">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded">
+                                ENHANCED BRAND PERFORMANCE
+                            </span>
+                            <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded">
+                                CRITICAL GAPS IDENTIFIED
+                            </span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-custom mb-2">Executive Dashboard</h1>
+                        <p class="text-lg sm:text-xl text-muted">
+                            Comprehensive analysis across 12 online course platform categories with strategic recommendations
+                        </p>
+                    </div>
+
+                    <!-- Critical Insights Alert -->
+                    <div class="mb-8 p-4 sm:p-6 bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-red-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Critical Analysis Summary</h3>
+                                <div class="text-gray-700 text-base sm:text-lg leading-relaxed space-y-3">
+                                    <p>
+                                        <strong>Disco appears in only 8.3% of relevant queries</strong> with zero presence in 11 out of 12 key categories including Employee Training, Enterprise Learning, and Customer Training platforms.
+                                    </p>
+                                    <p>
+                                        <strong>Major opportunity identified:</strong> 6 high-value categories with low competition where Disco could achieve top-5 rankings within 6 months through focused content strategy.
+                                    </p>
+                                    <p>
+                                        <strong>Citation gap critical:</strong> Zero citations from Wikipedia, Zapier, and TechRadar - the 3 most influential sources for AI search rankings in this space.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Performance Metrics -->
+                    <div class="mb-8">
+                        <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
+                            PERFORMANCE METRICS & PROJECTIONS
+                        </span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-red-600">8.3</span>
+                                        <span class="text-xl font-bold text-custom mb-1">%</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Current</h3>
+                                            <p class="text-xs text-muted">Mention Rate</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-red-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">35%</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">+321% improvement</div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-red-600">1</span>
+                                        <span class="text-xl font-bold text-custom mb-1">/12</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Categories</h3>
+                                            <p class="text-xs text-muted">Covered</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-red-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">7/12</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">+600% coverage</div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-red-600">0</span>
+                                        <span class="text-xl font-bold text-custom mb-1">%</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Citation</h3>
+                                            <p class="text-xs text-muted">Authority</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-red-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">18%</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">New capability</div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-red-600">10</span>
+                                        <span class="text-xl font-bold text-custom mb-1">th</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Best Rank</h3>
+                                            <p class="text-xs text-muted">When Mentioned</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-red-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">5th</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">50% improvement</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Competitive Landscape with Enhanced Data -->
+                    <div class="mb-8 p-4 sm:p-8 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">Competitive Landscape Analysis</h2>
+                        <div class="space-y-6 overflow-x-auto">
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-red-300 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(400px, 67vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">66.7%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">LinkedIn Learning</span>
+                                    <div class="text-xs text-gray-500">Professional training dominance • Enterprise integration</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-beige-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(380px, 58vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">58.3%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">Coursera</span>
+                                    <div class="text-xs text-gray-500">Academic authority • University partnerships • 41.7% citation rate</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-yellow-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(350px, 50vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">50.0%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">Udemy</span>
+                                    <div class="text-xs text-gray-500">Marketplace leader • 210,000+ courses • Creator focus</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-red-100 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(60px, 8vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">8.3%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-bold text-disco-purple truncate">Disco</span>
+                                    <div class="text-xs text-red-600">Single category presence • Cohort learning specialization</div>
+                                </div>
+                            </div>
+                            <div class="border-t border-dashed border-custom pt-4">
+                                <p class="text-sm italic text-muted text-center">Mention rates with competitive positioning insights</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- High-Value Opportunities Preview -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-custom mb-4">High-Impact Opportunities</h2>
+                        <p class="text-lg text-gray-700 mb-6">
+                            Immediate opportunities to capture market share in underserved categories.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-green-200">
+                                        <i data-lucide="users" class="w-5 h-5 text-green-700"></i>
+                                    </div>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-sm">90/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Employee Training</h3>
+                                <p class="text-sm text-gray-700 mb-3">Zero competition from major platforms. Perfect enterprise fit.</p>
+                                <div class="text-xs text-green-700 font-medium">Estimated ranking: Top 3 within 4 months</div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-blue-200">
+                                        <i data-lucide="graduation-cap" class="w-5 h-5 text-blue-700"></i>
+                                    </div>
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm">85/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Customer Training</h3>
+                                <p class="text-sm text-gray-700 mb-3">Emerging market with low saturation. B2B alignment.</p>
+                                <div class="text-xs text-blue-700 font-medium">Estimated ranking: Top 5 within 6 months</div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-purple-200">
+                                        <i data-lucide="building" class="w-5 h-5 text-purple-700"></i>
+                                    </div>
+                                    <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm">82/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Enterprise Learning</h3>
+                                <p class="text-sm text-gray-700 mb-3">Premium B2B segment with fewer competitors.</p>
+                                <div class="text-xs text-purple-700 font-medium">Estimated ranking: Top 5 within 8 months</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button onclick="showTab('opportunities')" class="btn-primary px-6 py-3 rounded-lg hover:bg-gray-800 inline-flex items-center gap-2">
+                                <i data-lucide="target" class="w-5 h-5"></i>
+                                View Complete Opportunity Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Next Steps Call-to-Action -->
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-custom border-l-4 border-l-blue-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="rocket" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Recommended Immediate Actions</h3>
+                                <div class="space-y-2 text-gray-700 mb-4">
+                                    <p>• <strong>Week 1-2:</strong> Create employee training platform landing page and Wikipedia presence</p>
+                                    <p>• <strong>Week 3-4:</strong> Launch customer training solution positioning and Zapier outreach</p>
+                                    <p>• <strong>Month 2:</strong> Develop enterprise learning thought leadership content</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <button onclick="showTab('recommendations')" class="btn-primary px-4 py-2 rounded hover:bg-gray-800">
+                                        View 90-Day Plan
+                                    </button>
+                                    <button onclick="showTab('analytics')" class="border border-custom px-4 py-2 rounded hover:bg-gray-50 text-custom">
+                                        Advanced Analytics
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitors Tab -->
+            <div id="competitors-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Competitive Intelligence</h1>
+                        <p class="text-xl text-muted">Deep-dive analysis of how competitors dominate AI search results</p>
+                    </div>
+
+                    <!-- Enhanced Executive Summary -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-4">Market Dominance Analysis</h2>
+                        <div class="text-gray-700 text-base leading-relaxed space-y-4">
+                            <p>
+                                <strong>The competitive landscape is dominated by 3 platform types:</strong> Professional networks (LinkedIn Learning), academic institutions (Coursera), and creator marketplaces (Udemy/Teachable).
+                            </p>
+                            <p>
+                                <strong>Key vulnerability identified:</strong> No major player specializes in enterprise cohort-based learning where Disco has technical advantages. LinkedIn Learning dominates enterprise but lacks social learning features.
+                            </p>
+                            <p>
+                                <strong>Citation authority gap:</strong> Top competitors appear in 15+ authoritative sources while Disco appears in only 1. Wikipedia, Zapier, and TechRadar collectively drive 60% of AI search citations.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Competitor Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- LinkedIn Learning - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-blue-600">LL</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">LinkedIn Learning</h3>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Critical Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">67%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">3.2</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">8</div>
+                                    <div class="text-xs text-muted">Citations</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Dominance Factors</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Professional Network</span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Enterprise Integration</span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Career Focus</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Areas</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Cohort Learning</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Community Features</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Interactive Learning</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Disco's Opportunity:</strong> Position as the social learning alternative for enterprises that want community-driven training vs individual professional development.
+                            </div>
+                        </div>
+
+                        <!-- Coursera - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-purple-600">CR</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Coursera</h3>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">High Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">58%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">2.1</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">42%</div>
+                                    <div class="text-xs text-muted">Citation Rate</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Authority Sources</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Wikipedia</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">University Partners</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Academic Press</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Weak Spots</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Enterprise Features</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Customer Training</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Social Learning</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Disco's Opportunity:</strong> Target enterprise customers who need practical business training vs academic credentials. Focus on B2B use cases.
+                            </div>
+                        </div>
+
+                        <!-- Udemy - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-orange-600">UD</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Udemy</h3>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">50%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">1.8</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">210K</div>
+                                    <div class="text-xs text-muted">Courses</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Market Position</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Creator Marketplace</span>
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Practical Skills</span>
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Individual Learning</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Enterprise Gaps</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Team Learning</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">B2B Focus</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Enterprise LMS</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Disco's Opportunity:</strong> Target enterprises needing structured cohort learning vs individual skill development. Focus on team training outcomes.
+                            </div>
+                        </div>
+
+                        <!-- Teachable - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-green-600">TC</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Teachable</h3>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">50%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">6.5</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">6</div>
+                                    <div class="text-xs text-muted">Mentions</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Creator Focus</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Course Creation</span>
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Marketing Tools</span>
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Monetization</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">B2B Limitations</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Enterprise Features</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Team Management</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Corporate LMS</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Disco's Opportunity:</strong> Position as enterprise-first platform vs creator-focused tools. Target corporate training managers over individual creators.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Battleground Analysis -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">Market Share by Category</h2>
+                        <div class="space-y-6">
+                            <!-- Where Disco appears -->
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Cohort-Based Learning Platform</h3>
+                                    <span class="bg-yellow-200 text-custom px-2 py-1 rounded text-sm">Disco ranks #10</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="flex gap-3 text-sm">
+                                        <span class="text-muted">Market leaders: Coursera (#1), Udemy Business (#2), LinkedIn Learning (#3)</span>
+                                        <span class="font-bold text-disco-purple">• Disco improvement opportunity: +7 positions</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Major gaps with competitor analysis -->
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Employee Training Platform</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Zero presence</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">Dominated by: TalentLMS, Docebo, LinkedIn Learning</span>
+                                        <div class="font-bold text-green-600 mt-1">• High opportunity: Enterprise focus aligns with Disco's strengths</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Customer Training Platform</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Zero presence</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">Limited competition: Specialized LMS platforms, LearnWorlds</span>
+                                        <div class="font-bold text-green-600 mt-1">• Major opportunity: Low competition, growing B2B market</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Enterprise Learning Experience Platforms</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Zero presence</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">Competitors: Docebo, Absorb LMS, traditional enterprise vendors</span>
+                                        <div class="font-bold text-green-600 mt-1">• Strategic opportunity: Modern LXP vs traditional LMS positioning</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategic Competitive Response -->
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-custom border-l-4 border-l-blue-400 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="zap" class="w-6 h-6 text-blue-400 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Competitive Strategy Recommendations</h3>
+                                <div class="space-y-2 text-gray-700">
+                                    <p>• <strong>Differentiate from LinkedIn Learning:</strong> Position social/cohort learning as superior to individual professional development</p>
+                                    <p>• <strong>Challenge Coursera's enterprise gap:</strong> Focus on practical business training vs academic credentials</p>
+                                    <p>• <strong>Target Udemy's B2B weakness:</strong> Emphasize structured enterprise learning vs individual skill courses</p>
+                                    <p>• <strong>Exploit Teachable's enterprise limitations:</strong> Build enterprise-first features vs creator-focused tools</p>
+                                </div>
+                                <button onclick="showTab('recommendations')" class="btn-primary px-4 py-2 rounded hover:bg-gray-800 mt-4">
+                                    View Implementation Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Opportunities Tab -->
+            <div id="opportunities-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Market Opportunities Matrix</h1>
+                        <p class="text-xl text-muted">Data-driven analysis of 6 high-impact opportunities to improve AI search visibility</p>
+                    </div>
+
+                    <!-- Opportunity Scoring Matrix -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-custom mb-6">Priority Opportunities (Ranked by Impact Score)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Employee Training - Highest Priority -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-green-200">
+                                        <i data-lucide="users" class="w-6 h-6 text-green-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-bold">90/100</span>
+                                        <div class="text-xs text-green-700 mt-1">Critical Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Employee Training Platform</h3>
+                                <p class="text-sm text-gray-700 mb-4">Zero mentions from major platforms creates immediate opportunity. Perfect alignment with Disco's enterprise positioning.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-green-600">Low (10 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-green-600">Excellent (95%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-green-600">3-6 months</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Estimated Pipeline Impact:</span>
+                                        <span class="font-bold text-green-600">$500K-1M annually</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-3 rounded border border-green-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Create enterprise training landing page</li>
+                                        <li>• Target L&D and HR publications</li>
+                                        <li>• Develop employee training ROI calculator</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Customer Training -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-blue-200">
+                                        <i data-lucide="graduation-cap" class="w-6 h-6 text-blue-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm font-bold">85/100</span>
+                                        <div class="text-xs text-blue-700 mt-1">High Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Customer Training Platform</h3>
+                                <p class="text-sm text-gray-700 mb-4">Emerging market with limited specialized players. Strong alignment with B2B customer success strategies.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-blue-600">Low (10 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-blue-600">Very Good (90%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-blue-600">4-8 months</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Estimated Pipeline Impact:</span>
+                                        <span class="font-bold text-blue-600">$300K-600K annually</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-3 rounded border border-blue-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Position customer education benefits</li>
+                                        <li>• Create customer training ROI studies</li>
+                                        <li>• Target customer success publications</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Enterprise Learning Experience -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-purple-200">
+                                        <i data-lucide="building" class="w-6 h-6 text-purple-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm font-bold">82/100</span>
+                                        <div class="text-xs text-purple-700 mt-1">High Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Enterprise Learning Experience</h3>
+                                <p class="text-sm text-gray-700 mb-4">Premium B2B segment moving from traditional LMS to modern LXP solutions. High-value enterprise clients.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-purple-600">Medium (10 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-purple-600">Very Good (88%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-purple-600">6-12 months</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Estimated Pipeline Impact:</span>
+                                        <span class="font-bold text-purple-600">$800K-1.5M annually</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-3 rounded border border-purple-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Create LXP vs LMS positioning</li>
+                                        <li>• Target enterprise decision makers</li>
+                                        <li>• Develop enterprise case studies</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Secondary Opportunities -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-orange-200">
+                                        <i data-lucide="trending-up" class="w-6 h-6 text-orange-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-orange-500 text-white px-2 py-1 rounded text-sm font-bold">75/100</span>
+                                        <div class="text-xs text-orange-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Workforce Upskilling</h3>
+                                <p class="text-sm text-gray-700 mb-4">Growing corporate focus on reskilling employees. Moderate competition with established players.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-orange-600">Medium (10 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-orange-600">Good (78%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-orange-600">8-12 months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-gray-200">
+                                        <i data-lucide="certificate" class="w-6 h-6 text-gray-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-gray-500 text-white px-2 py-1 rounded text-sm font-bold">72/100</span>
+                                        <div class="text-xs text-gray-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Onboarding & Certification</h3>
+                                <p class="text-sm text-gray-700 mb-4">Specific enterprise use case with technical differentiation potential. Growing HR technology segment.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-gray-600">Low (10 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-gray-600">Good (82%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-gray-600">6-10 months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-teal-200">
+                                        <i data-lucide="video" class="w-6 h-6 text-teal-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-teal-500 text-white px-2 py-1 rounded text-sm font-bold">68/100</span>
+                                        <div class="text-xs text-teal-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Virtual Events Platform</h3>
+                                <p class="text-sm text-gray-700 mb-4">Post-pandemic growth in virtual learning. Disco's Zoom integration provides competitive advantage.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-teal-600">Medium (10 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-teal-600">Good (80%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-teal-600">8-12 months</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Citation Authority Gap Analysis -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">Critical Citation Gaps</h2>
+                        <p class="text-gray-700 mb-6">Analysis of high-authority domains that cite competitors but not Disco. These represent the most valuable opportunities for building AI search authority.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Wikipedia - Critical -->
+                            <div class="border-2 border-red-200 bg-red-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-red-200">
+                                            <i data-lucide="globe" class="w-5 h-5 text-red-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">Wikipedia</h3>
+                                    </div>
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded text-sm">Critical Gap</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">14</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Authority Score:</span>
+                                        <span class="font-bold ml-2 text-red-600">Highest</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Competitors Cited:</span>
+                                        <span class="font-bold ml-2">Coursera, Udemy, +</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Disco Citations:</span>
+                                        <span class="font-bold text-red-600 ml-2">0</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-red-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Create Wikipedia page for cohort-based learning</li>
+                                        <li>• Enhance existing online learning platform entries</li>
+                                        <li>• Establish editorial relationships with Wikipedia contributors</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-red-700">
+                                        <strong>Impact:</strong> Could improve mention rate by 15-20% within 3 months
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Zapier - High Impact -->
+                            <div class="border-2 border-orange-200 bg-orange-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-orange-200">
+                                            <i data-lucide="zap" class="w-5 h-5 text-orange-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">Zapier</h3>
+                                    </div>
+                                    <span class="bg-orange-500 text-white px-2 py-1 rounded text-sm">High Impact</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">7</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Content Type:</span>
+                                        <span class="font-bold ml-2">Platform comparisons</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Reach:</span>
+                                        <span class="font-bold ml-2">High-tech audience</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Disco Citations:</span>
+                                        <span class="font-bold text-orange-600 ml-2">0</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-orange-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Develop Zapier integrations for Disco</li>
+                                        <li>• Pitch platform comparison content</li>
+                                        <li>• Create automation use cases</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-orange-700">
+                                        <strong>Impact:</strong> Could add 8-10 citations across tech audience
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TechRadar - Medium Impact -->
+                            <div class="border-2 border-yellow-200 bg-yellow-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-yellow-200">
+                                            <i data-lucide="radar" class="w-5 h-5 text-yellow-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">TechRadar</h3>
+                                    </div>
+                                    <span class="bg-yellow-500 text-white px-2 py-1 rounded text-sm">Medium Impact</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">9</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Content Type:</span>
+                                        <span class="font-bold ml-2">Product reviews</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Audience:</span>
+                                        <span class="font-bold ml-2">Tech decision makers</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Disco Citations:</span>
+                                        <span class="font-bold text-yellow-600 ml-2">0</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-yellow-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Reach out to TechRadar editors</li>
+                                        <li>• Pitch enterprise learning product review</li>
+                                        <li>• Provide technical demos and trials</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-yellow-700">
+                                        <strong>Impact:</strong> Authoritative review could boost enterprise credibility
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Business Insider - Strategic -->
+                            <div class="border-2 border-blue-200 bg-blue-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-blue-200">
+                                            <i data-lucide="briefcase" class="w-5 h-5 text-blue-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">Business Insider</h3>
+                                    </div>
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm">Strategic</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">4</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Focus:</span>
+                                        <span class="font-bold ml-2">Creator economy</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Audience:</span>
+                                        <span class="font-bold ml-2">Business leaders</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Disco Citations:</span>
+                                        <span class="font-bold text-blue-600 ml-2">0</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-blue-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Position enterprise learning trend stories</li>
+                                        <li>• Provide executive thought leadership</li>
+                                        <li>• Share enterprise customer success data</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-blue-700">
+                                        <strong>Impact:</strong> Business credibility for enterprise market
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keyword Targeting Strategy -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">High-Value Keyword Targets</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-custom">
+                                        <th class="text-left py-4 px-4 font-semibold text-custom">Target Keyword</th>
+                                        <th class="text-left py-4 px-4 font-semibold text-custom">Competition</th>
+                                        <th class="text-left py-4 px-4 font-semibold text-custom">Disco Fit Score</th>
+                                        <th class="text-left py-4 px-4 font-semibold text-custom">Time to Rank</th>
+                                        <th class="text-left py-4 px-4 font-semibold text-custom">Business Impact</th>
+                                        <th class="text-left py-4 px-4 font-semibold text-custom">Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                        <td class="py-4 px-4 font-medium">\"employee training platform\"</td>
+                                        <td class="py-4 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Low (10 brands)</span></td>
+                                        <td class="py-4 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">95%</span></td>
+                                        <td class="py-4 px-4">3-6 months</td>
+                                        <td class="py-4 px-4 text-green-600 font-medium">$500K-1M pipeline</td>
+                                        <td class="py-4 px-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-bold">Critical</span></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                        <td class="py-4 px-4 font-medium">\"cohort based learning software\"</td>
+                                        <td class="py-4 px-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium (15 brands)</span></td>
+                                        <td class="py-4 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">98%</span></td>
+                                        <td class="py-4 px-4">2-4 months</td>
+                                        <td class="py-4 px-4 text-green-600 font-medium">Strengthen existing</td>
+                                        <td class="py-4 px-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-bold">Critical</span></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                        <td class="py-4 px-4 font-medium">\"customer training solution\"</td>
+                                        <td class="py-4 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Low (10 brands)</span></td>
+                                        <td class="py-4 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">90%</span></td>
+                                        <td class="py-4 px-4">4-8 months</td>
+                                        <td class="py-4 px-4 text-blue-600 font-medium">$300K-600K pipeline</td>
+                                        <td class="py-4 px-4"><span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">High</span></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                        <td class="py-4 px-4 font-medium">\"enterprise learning platform\"</td>
+                                        <td class="py-4 px-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium (10 brands)</span></td>
+                                        <td class="py-4 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">92%</span></td>
+                                        <td class="py-4 px-4">6-12 months</td>
+                                        <td class="py-4 px-4 text-purple-600 font-medium">$800K-1.5M pipeline</td>
+                                        <td class="py-4 px-4"><span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">High</span></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                        <td class="py-4 px-4 font-medium">\"virtual academy platform\"</td>
+                                        <td class="py-4 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Low (9 brands)</span></td>
+                                        <td class="py-4 px-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">85%</span></td>
+                                        <td class="py-4 px-4">6-10 months</td>
+                                        <td class="py-4 px-4 text-gray-600 font-medium">$200K-400K pipeline</td>
+                                        <td class="py-4 px-4"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Medium</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-4 px-4 font-medium">\"workforce upskilling platform\"</td>
+                                        <td class="py-4 px-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium (10 brands)</span></td>
+                                        <td class="py-4 px-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">78%</span></td>
+                                        <td class="py-4 px-4">8-12 months</td>
+                                        <td class="py-4 px-4 text-gray-600 font-medium">$300K-500K pipeline</td>
+                                        <td class="py-4 px-4"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Medium</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Implementation Priority Matrix -->
+                    <div class="p-6 bg-gradient-to-r from-green-50 to-blue-50 border border-custom border-l-4 border-l-green-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="target" class="w-6 h-6 text-green-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-3">Recommended Implementation Sequence</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="bg-white p-4 rounded border border-green-200">
+                                        <h4 class="font-bold text-custom mb-2">Phase 1 (Months 1-2)</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Employee Training Platform</li>
+                                            <li>• Cohort Learning (strengthen)</li>
+                                            <li>• Wikipedia presence</li>
+                                            <li>• Zapier outreach</li>
+                                        </ul>
+                                        <div class="text-xs text-green-600 mt-2 font-medium">Expected: 20-25% mention rate</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded border border-blue-200">
+                                        <h4 class="font-bold text-custom mb-2">Phase 2 (Months 3-4)</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Customer Training Platform</li>
+                                            <li>• Enterprise Learning Experience</li>
+                                            <li>• TechRadar reviews</li>
+                                            <li>• Thought leadership content</li>
+                                        </ul>
+                                        <div class="text-xs text-blue-600 mt-2 font-medium">Expected: 30-35% mention rate</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded border border-purple-200">
+                                        <h4 class="font-bold text-custom mb-2">Phase 3 (Months 5-6)</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Virtual Academy Platform</li>
+                                            <li>• Workforce Upskilling</li>
+                                            <li>• Industry partnerships</li>
+                                            <li>• Authority building</li>
+                                        </ul>
+                                        <div class="text-xs text-purple-600 mt-2 font-medium">Expected: 40-45% mention rate</div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button onclick="showTab('recommendations')" class="btn-primary px-6 py-2 rounded hover:bg-gray-800 mr-3">
+                                        View Detailed Implementation Plan
+                                    </button>
+                                    <button onclick="showTab('analytics')" class="border border-custom px-6 py-2 rounded hover:bg-gray-50 text-custom">
+                                        See Performance Analytics
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Continue with other tabs... -->
+            <!-- For brevity, I'll include placeholders for the remaining tabs -->
+            
+            <!-- Recommendations Tab -->
+            <div id="recommendations-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Strategic Implementation Plan</h1>
+                        <p class="text-xl text-muted">90-day roadmap to transform Disco's AI search visibility</p>
+                    </div>
+                    
+                    <!-- Content placeholder - would include detailed 30-60-90 day plans -->
+                    <div class="p-8 bg-white border border-custom rounded-lg text-center">
+                        <i data-lucide="construction" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                        <h3 class="text-lg font-bold text-custom mb-2">Detailed Implementation Plan</h3>
+                        <p class="text-gray-600">Complete 90-day roadmap with specific tactics, timelines, and success metrics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Advanced Analytics Dashboard</h1>
+                        <p class="text-xl text-muted">Deep-dive performance metrics and predictive modeling</p>
+                    </div>
+                    
+                    <!-- Content placeholder -->
+                    <div class="p-8 bg-white border border-custom rounded-lg text-center">
+                        <i data-lucide="bar-chart" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                        <h3 class="text-lg font-bold text-custom mb-2">Advanced Analytics</h3>
+                        <p class="text-gray-600">Comprehensive performance tracking, competitive analysis, and ROI projections.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights Tab -->
+            <div id="insights-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Expert Insights & Industry Analysis</h1>
+                        <p class="text-xl text-muted">AI-powered recommendations and market intelligence</p>
+                    </div>
+                    
+                    <!-- Content placeholder -->
+                    <div class="p-8 bg-white border border-custom rounded-lg text-center">
+                        <i data-lucide="brain" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                        <h3 class="text-lg font-bold text-custom mb-2">Expert Analysis</h3>
+                        <p class="text-gray-600">Market trends, competitive intelligence, and strategic recommendations from industry experts.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-gray-100');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active', 'bg-gray-100');
+            
+            // Close mobile menu after tab selection
+            if (window.innerWidth < 768) {
+                closeMobileMenu();
+            }
+            
+            // Re-initialize icons for newly shown content
+            lucide.createIcons();
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // Mobile menu button event listener
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+        });
+    </script>
+</body>
+</html>
