@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Sapia GEO Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .bg-custom { background-color: #f8f4f0; }
+        .text-custom { color: #2f2f2f; }
+        .text-muted { color: #6c6e76; }
+        .border-custom { border-color: #e0cbb5; }
+        .bg-yellow-custom { background-color: #dfe34e; }
+        .bg-green-custom { background-color: #b1dbc3; }
+        .bg-beige-custom { background-color: #e2dbcd; }
+        .bg-purple-custom { background-color: #daa6de; }
+        .bg-blue-custom { background-color: #a1c5ff; }
+        .bg-sapia-purple { background-color: #8b5cf6; }
+        .bg-sapia-light { background-color: #ede9fe; }
+        
+        /* Fix button contrast */
+        .btn-primary { background-color: #2f2f2f; color: white; }
+        .btn-primary:hover { background-color: #1a1a1a; }
+        
+        /* Fix badge contrast */
+        .badge-insight { color: #2f2f2f !important; font-weight: 600; }
+        
+        /* Fix rank badge contrast */
+        .rank-badge { background-color: #2f2f2f !important; color: white !important; }
+        
+        /* Mobile responsiveness */
+        .mobile-sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .mobile-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        @media (max-width: 767px) {
+            .sidebar-fixed {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 40;
+            }
+            .main-content-mobile {
+                padding-left: 0;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .mobile-sidebar {
+                transform: translateX(0) !important;
+            }
+            .mobile-overlay {
+                display: none;
+            }
+        }
+        
+        /* Touch-friendly interactions */
+        .touch-friendly {
+            min-height: 44px;
+        }
+        
+        @media (hover: none) and (pointer: coarse) {
+            .hover\:bg-gray-100:hover {
+                background-color: transparent;
+            }
+            .touch-friendly:active {
+                background-color: #f3f4f6;
+            }
+        }
+
+        /* Enhanced styling for opportunity cards */
+        .opportunity-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .opportunity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-custom">
+    <!-- Mobile menu button -->
+    <div class="md:hidden fixed top-4 left-4 z-50">
+        <button id="mobile-menu-btn" class="p-2 bg-white border border-custom rounded-lg shadow-sm touch-friendly">
+            <i data-lucide="menu" class="w-6 h-6 text-custom"></i>
+        </button>
+    </div>
+    
+    <!-- Mobile overlay -->
+    <div id="mobile-overlay" class="mobile-overlay" onclick="closeMobileMenu()"></div>
+    
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-white border-r border-custom p-6 md:relative md:translate-x-0 sidebar-fixed mobile-sidebar overflow-y-auto">
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-custom">Enhanced Sapia GEO</h2>
+                <p class="text-sm text-muted">AI Hiring Platform Intelligence</p>
+            </div>
+            
+            <nav class="space-y-2">
+                <button onclick="showTab('overview')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3 active">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    Overview
+                </button>
+                <button onclick="showTab('competitors')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    Competitors
+                </button>
+                <button onclick="showTab('opportunities')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="target" class="w-5 h-5"></i>
+                    Opportunities
+                </button>
+                <button onclick="showTab('recommendations')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                    Recommendations
+                </button>
+            </nav>
+
+            <!-- Quick Stats Sidebar -->
+            <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-sm font-semibold text-custom mb-3">Quick Stats</h3>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-muted">Current Mention Rate:</span>
+                        <span class="font-bold text-yellow-600">7.4%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">Target (6mo):</span>
+                        <span class="font-bold text-green-600">60%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">Categories Covered:</span>
+                        <span class="font-bold">1/9</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">High-Value Opportunities:</span>
+                        <span class="font-bold text-blue-600">4</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto main-content-mobile md:ml-0">
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <!-- Enhanced Header with Executive Summary -->
+                    <div class="mb-8">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded">
+                                ENHANCED BRAND PERFORMANCE
+                            </span>
+                            <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+                                MODERATE PRESENCE IDENTIFIED
+                            </span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-custom mb-2">Executive Dashboard</h1>
+                        <p class="text-lg sm:text-xl text-muted">
+                            Comprehensive analysis across 9 AI hiring platform categories with strategic recommendations
+                        </p>
+                    </div>
+
+                    <!-- Critical Insights Alert -->
+                    <div class="mb-8 p-4 sm:p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-yellow-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Critical Analysis Summary</h3>
+                                <div class="text-gray-700 text-base sm:text-lg leading-relaxed space-y-3">
+                                    <p>
+                                        <strong>Sapia appears in 7.4% of relevant queries</strong> with presence in only 1 out of 9 key categories, specifically ranking #3 average in Chat Interview platforms.
+                                    </p>
+                                    <p>
+                                        <strong>Major opportunity identified:</strong> 4 high-value categories with low competition where Sapia could achieve top-5 rankings within 6 months through focused content strategy.
+                                    </p>
+                                    <p>
+                                        <strong>Market positioning gap:</strong> Sapia has 0.8% overall share of voice compared to market leaders HireVue (92.6%) and Paradox (48.1%).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Performance Metrics -->
+                    <div class="mb-8">
+                        <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
+                            PERFORMANCE METRICS & PROJECTIONS
+                        </span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-yellow-600">7.4</span>
+                                        <span class="text-xl font-bold text-custom mb-1">%</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Current</h3>
+                                            <p class="text-xs text-muted">Mention Rate</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-yellow-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">50%</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">+575% improvement</div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-red-600">1</span>
+                                        <span class="text-xl font-bold text-custom mb-1">/9</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Categories</h3>
+                                            <p class="text-xs text-muted">Covered</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-red-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">5/9</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">+400% coverage</div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-yellow-600">0.8</span>
+                                        <span class="text-xl font-bold text-custom mb-1">%</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Share</h3>
+                                            <p class="text-xs text-muted">of Voice</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-yellow-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">8%</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">10x growth</div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-yellow-600">6</span>
+                                        <span class="text-xl font-bold text-custom mb-1">th</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Best Rank</h3>
+                                            <p class="text-xs text-muted">When Mentioned</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-yellow-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">3rd</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">50% improvement</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Competitive Landscape with Enhanced Data -->
+                    <div class="mb-8 p-4 sm:p-8 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">Competitive Landscape Analysis</h2>
+                        <div class="space-y-6 overflow-x-auto">
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-red-300 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(350px, 58vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">92.6%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">HireVue</span>
+                                    <div class="text-xs text-gray-500">Video interview dominance • Enterprise presence • Avg rank 2.6</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-beige-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(200px, 30vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">48.1%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">Paradox</span>
+                                    <div class="text-xs text-gray-500">Conversational AI leader • Chat automation • Avg rank 5.1</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-yellow-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(180px, 28vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">44.4%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">iCIMS</span>
+                                    <div class="text-xs text-gray-500">Talent cloud platform • ATS integration • Avg rank 2.7</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-yellow-100 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(30px, 5vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">7.4%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-bold text-sapia-purple truncate">Sapia</span>
+                                    <div class="text-xs text-yellow-600">Chat interview focus • Single category presence • Avg rank 3</div>
+                                </div>
+                            </div>
+                            <div class="border-t border-dashed border-custom pt-4">
+                                <p class="text-sm italic text-muted text-center">Mention rates with competitive positioning insights</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- High-Value Opportunities Preview -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-custom mb-4">High-Impact Opportunities</h2>
+                        <p class="text-lg text-gray-700 mb-6">
+                            Immediate opportunities to capture market share in underserved AI hiring categories.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-green-200">
+                                        <i data-lucide="video" class="w-5 h-5 text-green-700"></i>
+                                    </div>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-sm">88/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Video Interview Platforms</h3>
+                                <p class="text-sm text-gray-700 mb-3">Zero current presence but strong technical capability for video-based hiring solutions.</p>
+                                <div class="text-xs text-green-700 font-medium">Estimated ranking: Top 5 within 4 months</div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-blue-200">
+                                        <i data-lucide="brain" class="w-5 h-5 text-blue-700"></i>
+                                    </div>
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm">85/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">AI Career Coach</h3>
+                                <p class="text-sm text-gray-700 mb-3">Emerging market with zero competition. Perfect fit for Sapia's AI capabilities.</p>
+                                <div class="text-xs text-blue-700 font-medium">Estimated ranking: Top 3 within 6 months</div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-purple-200">
+                                        <i data-lucide="calendar" class="w-5 h-5 text-purple-700"></i>
+                                    </div>
+                                    <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm">82/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Interview Scheduling</h3>
+                                <p class="text-sm text-gray-700 mb-3">Zero presence in this essential hiring workflow component.</p>
+                                <div class="text-xs text-purple-700 font-medium">Estimated ranking: Top 5 within 8 months</div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-orange-200">
+                                        <i data-lucide="users" class="w-5 h-5 text-orange-700"></i>
+                                    </div>
+                                    <span class="bg-orange-500 text-white px-2 py-1 rounded text-sm">80/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Candidate Insights</h3>
+                                <p class="text-sm text-gray-700 mb-3">Zero competition in psychometric analysis and candidate intelligence.</p>
+                                <div class="text-xs text-orange-700 font-medium">Estimated ranking: Top 5 within 6 months</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button onclick="showTab('opportunities')" class="btn-primary px-6 py-3 rounded-lg hover:bg-gray-800 inline-flex items-center gap-2">
+                                <i data-lucide="target" class="w-5 h-5"></i>
+                                View Complete Opportunity Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Next Steps Call-to-Action -->
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-custom border-l-4 border-l-blue-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="rocket" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Recommended Immediate Actions</h3>
+                                <div class="space-y-2 text-gray-700 mb-4">
+                                    <p>• <strong>Week 1-2:</strong> Launch foundational HR template library with dedicated landing pages and email campaigns</p>
+                                    <p>• <strong>Week 3-4:</strong> Establish competitive positioning content and begin organic search optimization</p>
+                                    <p>• <strong>Month 1 Focus:</strong> Build content foundation and capture early market awareness</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <button onclick="showTab('recommendations')" class="btn-primary px-4 py-2 rounded hover:bg-gray-800">
+                                        View 90-Day Plan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitors Tab -->
+            <div id="competitors-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Competitive Intelligence</h1>
+                        <p class="text-xl text-muted">Deep-dive analysis of how competitors dominate AI hiring platform rankings</p>
+                    </div>
+
+                    <!-- Enhanced Executive Summary -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-4">Market Dominance Analysis</h2>
+                        <div class="text-gray-700 text-base leading-relaxed space-y-4">
+                            <p>
+                                <strong>The competitive landscape is dominated by 3 platform types:</strong> Video interview platforms (HireVue), conversational AI tools (Paradox), and talent cloud solutions (iCIMS).
+                            </p>
+                            <p>
+                                <strong>Key vulnerability identified:</strong> No major player specializes in psychometric-driven chat interviews where Sapia has technical advantages. HireVue dominates video but lacks conversational AI sophistication.
+                            </p>
+                            <p>
+                                <strong>Market positioning gap:</strong> Top competitors have 100%+ mention rates while Sapia sits at 22.2%, indicating significant room for growth in brand visibility.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Competitor Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- HireVue - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-blue-600">HV</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">HireVue</h3>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Critical Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">92.6%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">2.6</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">25</div>
+                                    <div class="text-xs text-muted">Mentions</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Dominance Factors</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Video Interviews</span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Enterprise Scale</span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">AI Assessment</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Areas</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Chat Interviews</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Psychometric Analysis</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Conversational AI</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Sapia's Opportunity:</strong> Position chat-based psychometric assessment as more engaging and less intimidating than video interviews for candidates.
+                            </div>
+                        </div>
+
+                        <!-- Paradox - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-purple-600">PX</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Paradox</h3>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">High Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">48.1%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">5.1</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">13</div>
+                                    <div class="text-xs text-muted">Mentions</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Strength Areas</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Conversational AI</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Chat Automation</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Olivia Assistant</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Weak Spots</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Psychometric Depth</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Assessment Quality</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Personality Insights</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Sapia's Opportunity:</strong> Differentiate through deeper psychological assessment capabilities beyond basic chat automation.
+                            </div>
+                        </div>
+
+                        <!-- iCIMS - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-orange-600">IC</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">iCIMS</h3>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">44.4%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">2.7</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">12</div>
+                                    <div class="text-xs text-muted">Mentions</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Market Position</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Talent Cloud</span>
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">ATS Integration</span>
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Enterprise Focus</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Innovation Gaps</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Modern UI/UX</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">AI-First Design</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Chat Interfaces</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Sapia's Opportunity:</strong> Target enterprises seeking modern, AI-first hiring tools vs traditional ATS platforms.
+                            </div>
+                        </div>
+
+                        <!-- Textio - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-green-600">TX</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Textio</h3>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">40.7%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">8.3</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">11</div>
+                                    <div class="text-xs text-muted">Mentions</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Niche Focus</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Job Description AI</span>
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Language Optimization</span>
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Diversity Focus</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Limited Scope</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Full Interview Process</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Candidate Assessment</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">End-to-End Platform</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Sapia's Opportunity:</strong> Position as full-stack hiring solution vs single-feature tools like job description optimization.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Battleground Analysis -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">Market Share by Category</h2>
+                        <div class="space-y-6">
+                            <!-- Where Sapia appears -->
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Chat Interview Platforms</h3>
+                                    <span class="bg-green-200 text-custom px-2 py-1 rounded text-sm">Sapia ranks #3 (avg)</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="flex gap-3 text-sm">
+                                        <span class="text-muted">Market leaders: HireVue (#1), Sapia (#2 on OpenAI, #4 on Claude), Humanly (#3)</span>
+                                        <span class="font-bold text-sapia-purple">• Sapia's strongest category with 10% share of voice</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Major gaps with competitor analysis -->
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Video Interview Platforms</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Zero presence</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">Dominated by: HireVue (#1), Talview (#2), Interviewer.AI (#3)</span>
+                                        <div class="font-bold text-green-600 mt-1">• High opportunity: Low competition (18 brands), natural extension from chat interviews</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">AI Career Coach</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Zero presence</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">Limited competition: 24 brands total, emerging market</span>
+                                        <div class="font-bold text-green-600 mt-1">• Major opportunity: Very low competition (24 brands), perfect fit for Sapia's AI capabilities</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Interview Scheduling</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Zero presence</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">Competitors: 21 brands including Calendly, GoodTime, scheduling-focused tools</span>
+                                        <div class="font-bold text-green-600 mt-1">• Strategic opportunity: High competition (21 brands) but integration advantage</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Candidate Insights & Analytics</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Zero presence</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">Competitors: 23 brands, data analytics focus</span>
+                                        <div class="font-bold text-green-600 mt-1">• Perfect opportunity: High competition (23 brands) but psychometric differentiation</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Talent Insights & People Analytics</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Zero presence</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">Competitors: 22 brands, enterprise HR analytics focus</span>
+                                        <div class="font-bold text-green-600 mt-1">• Strategic opportunity: High competition (22 brands) but expansion potential</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategic Competitive Response -->
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-custom border-l-4 border-l-blue-400 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="zap" class="w-6 h-6 text-blue-400 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Competitive Strategy Recommendations</h3>
+                                <div class="space-y-2 text-gray-700">
+                                    <p>• <strong>Differentiate from HireVue:</strong> Position chat interviews as more candidate-friendly than intimidating video assessments</p>
+                                    <p>• <strong>Challenge Paradox's superficial AI:</strong> Emphasize deep psychometric insights vs basic chat automation</p>
+                                    <p>• <strong>Target iCIMS's legacy approach:</strong> Focus on modern, AI-first hiring experience vs traditional ATS systems</p>
+                                    <p>• <strong>Expand beyond Textio's niche:</strong> Build comprehensive hiring platform vs single-feature solutions</p>
+                                </div>
+                                <button onclick="showTab('recommendations')" class="btn-primary px-4 py-2 rounded hover:bg-gray-800 mt-4">
+                                    View Implementation Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Opportunities Tab -->
+            <div id="opportunities-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Market Opportunities Matrix</h1>
+                        <p class="text-xl text-muted">Data-driven analysis of 6 high-impact opportunities to improve AI search visibility</p>
+                    </div>
+
+                    <!-- Opportunity Scoring Matrix -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-custom mb-6">Priority Opportunities (Ranked by Impact Score)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- AI Career Coach - Highest Priority -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-green-200">
+                                        <i data-lucide="brain" class="w-6 h-6 text-green-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-bold">95/100</span>
+                                        <div class="text-xs text-green-700 mt-1">Critical Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">AI Career Coach</h3>
+                                <p class="text-sm text-gray-700 mb-4">Emerging category with zero competition and 24 brands total. Perfect alignment with Sapia's conversational AI and psychometric expertise.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-green-600">Very Low (24 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-green-600">Excellent (98%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 3:</span>
+                                        <span class="font-bold text-green-600">3-4 months</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-3 rounded border border-green-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Launch "AI Career Coach" feature set</li>
+                                        <li>• Create thought leadership content</li>
+                                        <li>• Build career guidance algorithms</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Video Interview -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-blue-200">
+                                        <i data-lucide="video" class="w-6 h-6 text-blue-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm font-bold">88/100</span>
+                                        <div class="text-xs text-blue-700 mt-1">High Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Video Interview Platforms</h3>
+                                <p class="text-sm text-gray-700 mb-4">Natural extension from chat interviews. Market dominated by HireVue but room for AI-first video solution with psychological insights.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-blue-600">Low (18 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-blue-600">Very Good (92%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-blue-600">4-6 months</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-3 rounded border border-blue-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Develop video interview capability</li>
+                                        <li>• Integrate with existing chat expertise</li>
+                                        <li>• Position as "psychometric video interviews"</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Candidate Insights -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-purple-200">
+                                        <i data-lucide="users" class="w-6 h-6 text-purple-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm font-bold">85/100</span>
+                                        <div class="text-xs text-purple-700 mt-1">High Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Candidate Insights & Analytics</h3>
+                                <p class="text-sm text-gray-700 mb-4">Zero current presence but perfect fit for Sapia's core psychometric and data analysis strengths. 23 competing brands.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-purple-600">High (23 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-purple-600">Excellent (95%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-purple-600">5-8 months</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-3 rounded border border-purple-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Develop candidate analytics dashboard</li>
+                                        <li>• Create personality insights reports</li>
+                                        <li>• Build predictive hiring models</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Secondary Opportunities -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-orange-200">
+                                        <i data-lucide="calendar" class="w-6 h-6 text-orange-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-orange-500 text-white px-2 py-1 rounded text-sm font-bold">78/100</span>
+                                        <div class="text-xs text-orange-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Interview Scheduling Integration</h3>
+                                <p class="text-sm text-gray-700 mb-4">21 competing brands but opportunity to integrate scheduling with Sapia's interview process for end-to-end solution.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-orange-600">High (21 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-orange-600">Good (82%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-orange-600">6-10 months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-teal-200">
+                                        <i data-lucide="trending-up" class="w-6 h-6 text-teal-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-teal-500 text-white px-2 py-1 rounded text-sm font-bold">75/100</span>
+                                        <div class="text-xs text-teal-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Talent & People Analytics</h3>
+                                <p class="text-sm text-gray-700 mb-4">22 brands competing in enterprise HR analytics. Opportunity to expand beyond hiring into ongoing talent management.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-teal-600">High (22 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-teal-600">Good (78%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-teal-600">8-12 months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-gray-200">
+                                        <i data-lucide="building" class="w-6 h-6 text-gray-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-gray-500 text-white px-2 py-1 rounded text-sm font-bold">72/100</span>
+                                        <div class="text-xs text-gray-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Talent Hub Platforms</h3>
+                                <p class="text-sm text-gray-700 mb-4">20 brands competing in talent hub space. Opportunity for Sapia to create integrated talent management platform.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-gray-600">High (20 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-gray-600">Good (75%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-gray-600">10-15 months</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Citation Authority Gap Analysis -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">Critical Citation Gaps</h2>
+                        <p class="text-gray-700 mb-6">Analysis of high-authority domains that cite competitors but not Sapia. These represent the most valuable opportunities for building AI search authority.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Wikipedia - Critical -->
+                            <div class="border-2 border-red-200 bg-red-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-red-200">
+                                            <i data-lucide="globe" class="w-5 h-5 text-red-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">Wikipedia</h3>
+                                    </div>
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded text-sm">Critical Gap</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">14</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Authority Score:</span>
+                                        <span class="font-bold ml-2 text-red-600">Highest</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Competitors Cited:</span>
+                                        <span class="font-bold ml-2">HireVue, iCIMS, Paradox</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Sapia Citations:</span>
+                                        <span class="font-bold text-red-600 ml-2">0</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-red-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Create Wikipedia page for "AI hiring platforms"</li>
+                                        <li>• Enhance existing psychometric assessment entries</li>
+                                        <li>• Establish editorial relationships with contributors</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-red-700">
+                                        <strong>Impact:</strong> Could improve mention rate by 10-15% within 2 months
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LinkedIn - High Impact -->
+                            <div class="border-2 border-orange-200 bg-orange-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-orange-200">
+                                            <i data-lucide="linkedin" class="w-5 h-5 text-orange-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">LinkedIn</h3>
+                                    </div>
+                                    <span class="bg-orange-500 text-white px-2 py-1 rounded text-sm">High Impact</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">9</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Content Type:</span>
+                                        <span class="font-bold ml-2">AI recruitment articles</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Reach:</span>
+                                        <span class="font-bold ml-2">HR professional audience</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Sapia Citations:</span>
+                                        <span class="font-bold text-orange-600 ml-2">Limited</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-orange-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Pitch thought leadership articles to HR publications</li>
+                                        <li>• Develop case studies and best practices content</li>
+                                        <li>• Build relationships with HR influencers</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-orange-700">
+                                        <strong>Impact:</strong> Could add 5-8 citations across HR audience
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TechRadar - Medium Impact -->
+                            <div class="border-2 border-yellow-200 bg-yellow-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-yellow-200">
+                                            <i data-lucide="radar" class="w-5 h-5 text-yellow-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">TechRadar</h3>
+                                    </div>
+                                    <span class="bg-yellow-500 text-white px-2 py-1 rounded text-sm">Medium Impact</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">2</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Content Type:</span>
+                                        <span class="font-bold ml-2">AI tool reviews</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Audience:</span>
+                                        <span class="font-bold ml-2">Tech decision makers</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Sapia Citations:</span>
+                                        <span class="font-bold text-yellow-600 ml-2">0</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-yellow-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Reach out to TechRadar AI/HR tech editors</li>
+                                        <li>• Pitch AI hiring platform review</li>
+                                        <li>• Provide technical demos and trials</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-yellow-700">
+                                        <strong>Impact:</strong> Authoritative review could boost tech credibility
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Industry Publications - Strategic -->
+                            <div class="border-2 border-blue-200 bg-blue-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-blue-200">
+                                            <i data-lucide="newspaper" class="w-5 h-5 text-blue-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">Industry Publications</h3>
+                                    </div>
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm">Strategic</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Key Sources:</span>
+                                        <span class="font-bold ml-2">Tools for Humans, iMocha</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Focus:</span>
+                                        <span class="font-bold ml-2">AI recruitment tools</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Audience:</span>
+                                        <span class="font-bold ml-2">Technical professionals</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Opportunity:</span>
+                                        <span class="font-bold text-blue-600 ml-2">High</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-blue-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Target AI/HR tech publication writers</li>
+                                        <li>• Provide expert commentary on industry trends</li>
+                                        <li>• Share research and case study data</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-blue-700">
+                                        <strong>Impact:</strong> Industry authority for technical audience
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Implementation Priority Matrix -->
+                    <div class="p-6 bg-gradient-to-r from-green-50 to-blue-50 border border-custom border-l-4 border-l-green-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="target" class="w-6 h-6 text-green-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-3">Recommended Implementation Sequence</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="bg-white p-4 rounded border border-green-200">
+                                        <h4 class="font-bold text-custom mb-2">Month 1: Foundation</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Launch comprehensive HR template library</li>
+                                            <li>• Create dedicated landing pages for each template category</li>
+                                            <li>• Develop email nurture campaigns for template users</li>
+                                            <li>• Establish competitive positioning and comparison content</li>
+                                        </ul>
+                                        <div class="text-xs text-green-600 mt-2 font-medium">Focus: Content foundation & early awareness</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded border border-blue-200">
+                                        <h4 class="font-bold text-custom mb-2">Month 2: Content Expansion</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Launch bottom-funnel conversion content and AI hiring cookbooks</li>
+                                            <li>• Expand template library with advanced use cases</li>
+                                            <li>• Develop technical implementation guides and tutorials</li>
+                                            <li>• Create thought leadership content positioning Sapia expertise</li>
+                                        </ul>
+                                        <div class="text-xs text-blue-600 mt-2 font-medium">Focus: Conversion optimization & expertise building</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded border border-purple-200">
+                                        <h4 class="font-bold text-custom mb-2">Month 3: Scale & Amplify</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Launch targeted paid advertising campaigns across channels</li>
+                                            <li>• Continue expanding content library and template offerings</li>
+                                            <li>• Optimize campaigns and content based on performance data</li>
+                                            <li>• Scale successful initiatives and double down on high-performers</li>
+                                        </ul>
+                                        <div class="text-xs text-purple-600 mt-2 font-medium">Focus: Paid amplification & data-driven optimization</div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button onclick="showTab('recommendations')" class="btn-primary px-6 py-2 rounded hover:bg-gray-800 mr-3">
+                                        View Detailed Implementation Plan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="recommendations-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Strategic Growth Playbook</h1>
+                        <p class="text-xl text-muted">Proven strategies to scale Sapia from 7.4% to 50%+ mention rate</p>
+                    </div>
+
+                    <!-- Executive Summary -->
+                    <div class="mb-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-custom border-l-4 border-l-blue-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="target" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Growth Strategy Overview</h3>
+                                <p class="text-gray-700 mb-4">
+                                    Based on proven playbooks from high-growth companies like Cohere, ClickUp, and Gorgias, this comprehensive strategy focuses on 6 core pillars to establish Sapia as the dominant AI hiring platform.
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                    <div class="bg-white p-3 rounded border">
+                                        <span class="font-bold text-green-600">Current State:</span> 7.4% mention rate, single category presence
+                                    </div>
+                                    <div class="bg-white p-3 rounded border">
+                                        <span class="font-bold text-blue-600">6-Month Goal:</span> 50% mention rate, 5 category presence
+                                    </div>
+                                    <div class="bg-white p-3 rounded border">
+                                        <span class="font-bold text-purple-600">Strategy:</span> Educational content + Lead generation + SEO dominance
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Strategy 1: Educational Cookbooks -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-green-100 rounded-lg">
+                                    <i data-lucide="book-open" class="w-6 h-6 text-green-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">AI Hiring Cookbooks</h3>
+                                    <p class="text-sm text-green-700 font-medium mb-2">Proven at Cohere • Bottom-funnel conversion focus</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Create comprehensive technical guides showing how to build advanced hiring workflows with Sapia's AI. Transform prospects into power users while dominating search results.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Content Examples:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• "Building Bias-Free Chat Interviews with Sapia API"</li>
+                                    <li>• "Advanced Psychometric Scoring: A Developer's Guide"</li>
+                                    <li>• "Integrating Sapia with ATS Systems: Complete Cookbook"</li>
+                                    <li>• "AI-Powered Candidate Journey Optimization"</li>
+                                    <li>• "Custom Scoring Models for Industry-Specific Roles"</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 2: HR Templates -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-blue-100 rounded-lg">
+                                    <i data-lucide="file-text" class="w-6 h-6 text-blue-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">HR Template Library</h3>
+                                    <p class="text-sm text-blue-700 font-medium mb-2">Proven at ClickUp • High-volume lead generation</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Create hundreds of free HR templates that rank for long-tail keywords. Capture leads across the entire hiring funnel, not just AI-specific searches.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Template Categories:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Candidate scoring rubrics and interview guides</li>
+                                    <li>• Acceptance/rejection email templates</li>
+                                    <li>• New hire onboarding checklists</li>
+                                    <li>• Job description templates by role/industry</li>
+                                    <li>• Performance review and feedback forms</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 3: Thought Leadership -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-purple-100 rounded-lg">
+                                    <i data-lucide="brain" class="w-6 h-6 text-purple-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">AI × Hiring Authority</h3>
+                                    <p class="text-sm text-purple-700 font-medium mb-2">Proven at Lemonstand/Thinkific • Long-term SEO dominance</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Own the "AI in hiring" conversation through comprehensive pillar content. Target companies still exploring AI adoption for maximum market capture.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Pillar Content Strategy:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• "The Complete Guide to AI Hiring in 2024"</li>
+                                    <li>• "Bias in AI Recruitment: Detection & Prevention"</li>
+                                    <li>• "ROI of AI Hiring: 50 Company Case Studies"</li>
+                                    <li>• "Future of Work: AI-Human Hiring Collaboration"</li>
+                                    <li>• "Legal & Ethical AI Hiring: Global Compliance Guide"</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 4: Competitor Campaigns -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-orange-100 rounded-lg">
+                                    <i data-lucide="zap" class="w-6 h-6 text-orange-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">Competitive Capture</h3>
+                                    <p class="text-sm text-orange-700 font-medium mb-2">Proven at Procurify/Typeform • Direct conversion focus</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Intercept prospects researching competitors through comparison pages and targeted SEM campaigns. Low competition = high ROI opportunity.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Target Competitors:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• HireVue alternative (92.6% mention rate leader)</li>
+                                    <li>• Paradox vs Sapia (48.1% conversational AI competitor)</li>
+                                    <li>• iCIMS alternative (44.4% enterprise ATS leader)</li>
+                                    <li>• "AI hiring platforms" broad SEM campaigns</li>
+                                    <li>• Humanly, Textio, Workable comparison pages</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 5: Free Tools -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-teal-100 rounded-lg">
+                                    <i data-lucide="wrench" class="w-6 h-6 text-teal-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">Lead Gen Tools</h3>
+                                    <p class="text-sm text-teal-700 font-medium mb-2">Proven at Gorgias • High-value lead capture</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Create valuable free tools that solve immediate hiring pain points. Capture high-intent leads while showcasing Sapia's AI capabilities.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Tool Portfolio:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• AI Job Description Generator (bias detection)</li>
+                                    <li>• Candidate Outreach Email Templates</li>
+                                    <li>• Interview Question Bank by Role/Industry</li>
+                                    <li>• Salary Benchmarking Calculator</li>
+                                    <li>• Time-to-Hire ROI Calculator</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 6: Community Building -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-red-100 rounded-lg">
+                                    <i data-lucide="users" class="w-6 h-6 text-red-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">AI Hiring Community</h3>
+                                    <p class="text-sm text-red-700 font-medium mb-2">New opportunity • First-mover advantage</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Build the premier community for AI hiring practitioners. Create network effects and establish Sapia as the category-defining platform.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Community Strategy:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Monthly "AI Hiring Roundtable" virtual events</li>
+                                    <li>• Slack/Discord community for practitioners</li>
+                                    <li>• Annual "Future of AI Recruiting" conference</li>
+                                    <li>• Customer success story spotlights</li>
+                                    <li>• Partnership with HR organizations and universities</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Implementation Timeline -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">90-Day Implementation Roadmap</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                                <h3 class="text-lg font-bold text-custom mb-4 flex items-center gap-2">
+                                    <i data-lucide="calendar" class="w-5 h-5 text-green-600"></i>
+                                    Month 1: Foundation
+                                </h3>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                        Launch HR template library (50 templates)
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                        Start competitor comparison pages
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                        Begin first AI hiring cookbook
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                        Launch SEM campaigns (low competition)
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                <h3 class="text-lg font-bold text-custom mb-4 flex items-center gap-2">
+                                    <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
+                                    Month 2: Acceleration
+                                </h3>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                                        Publish first major pillar content
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                                        Launch first free tool (Job Description Generator)
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                                        Expand template library to 150 templates
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                                        Start community building initiatives
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-purple-50 p-6 rounded-lg border border-purple-200">
+                                <h3 class="text-lg font-bold text-custom mb-4 flex items-center gap-2">
+                                    <i data-lucide="calendar" class="w-5 h-5 text-purple-600"></i>
+                                    Month 3: Optimization
+                                </h3>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="target" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+                                        Complete cookbook series (5 guides)
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="target" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+                                        Launch 2 additional free tools
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="target" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+                                        Optimize campaigns based on data
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="target" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+                                        Scale community to 500+ members
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-gray-100');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active', 'bg-gray-100');
+            
+            // Close mobile menu after tab selection
+            if (window.innerWidth < 768) {
+                closeMobileMenu();
+            }
+            
+            // Re-initialize icons for newly shown content
+            lucide.createIcons();
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // Mobile menu button event listener
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+        });
+    </script>
+</body>
+</html>
