@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procurify GEO Reports</title>
+    <title>Enhanced Procurify GEO Reports</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
@@ -16,6 +16,8 @@
         .bg-beige-custom { background-color: #e2dbcd; }
         .bg-purple-custom { background-color: #daa6de; }
         .bg-blue-custom { background-color: #a1c5ff; }
+        .bg-procurify-blue { background-color: #2563eb; }
+        .bg-procurify-light { background-color: #dbeafe; }
         
         /* Fix button contrast */
         .btn-primary { background-color: #2f2f2f; color: white; }
@@ -88,12 +90,24 @@
                 background-color: #f3f4f6;
             }
         }
+
+        /* Enhanced styling for opportunity cards */
+        .opportunity-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .opportunity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body class="bg-custom">
     <!-- Mobile menu button -->
     <div class="md:hidden fixed top-4 left-4 z-50">
-        <button id="mobile-menu-btn" class="p-2 bg-white border border-custom rounded-lg shadow-sm">
+        <button id="mobile-menu-btn" class="p-2 bg-white border border-custom rounded-lg shadow-sm touch-friendly">
             <i data-lucide="menu" class="w-6 h-6 text-custom"></i>
         </button>
     </div>
@@ -103,26 +117,53 @@
     
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div id="sidebar" class="w-64 bg-white border-r border-custom p-6 md:relative md:translate-x-0 sidebar-fixed mobile-sidebar">
+        <div id="sidebar" class="w-64 bg-white border-r border-custom p-6 md:relative md:translate-x-0 sidebar-fixed mobile-sidebar overflow-y-auto">
             <div class="mb-8">
-                <h2 class="text-xl font-bold text-custom">Procurify GEO</h2>
-                <p class="text-sm text-muted">Brand Intelligence</p>
+                <h2 class="text-xl font-bold text-custom">Enhanced Procurify GEO</h2>
+                <p class="text-sm text-muted">Procurement Software Intelligence</p>
             </div>
             
             <nav class="space-y-2">
-                <button onclick="showTab('overview')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 active touch-friendly">
+                <button onclick="showTab('overview')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3 active">
                     <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
                     Overview
                 </button>
-                <button onclick="showTab('competitors')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 touch-friendly">
+                <button onclick="showTab('competitors')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
                     <i data-lucide="users" class="w-5 h-5"></i>
                     Competitors
                 </button>
-                <button onclick="showTab('insights')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 touch-friendly">
-                    <i data-lucide="trending-up" class="w-5 h-5"></i>
-                    Insights
+                <button onclick="showTab('opportunities')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="target" class="w-5 h-5"></i>
+                    Opportunities
+                </button>
+                <button onclick="showTab('recommendations')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
+                    <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                    Recommendations
                 </button>
             </nav>
+
+            <!-- Quick Stats Sidebar -->
+            <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-sm font-semibold text-custom mb-3">Quick Stats</h3>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-muted">Current Mention Rate:</span>
+                        <span class="font-bold text-yellow-600">7.4%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">Target (6mo):</span>
+                        <span class="font-bold text-green-600">60%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">Categories Covered:</span>
+                        <span class="font-bold">5/12</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted">High-Value Opportunities:</span>
+                        <span class="font-bold text-blue-600">4</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -130,346 +171,281 @@
             <!-- Overview Tab -->
             <div id="overview-tab" class="tab-content">
                 <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
-                    <!-- Header -->
+                    <!-- Enhanced Header with Executive Summary -->
                     <div class="mb-8">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded">
-                                BRAND PERFORMANCE
+                                ENHANCED BRAND PERFORMANCE
+                            </span>
+                            <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+                                MODERATE PRESENCE IDENTIFIED
                             </span>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl font-bold text-custom mb-2">Performance snapshot</h1>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-custom mb-2">Executive Dashboard</h1>
                         <p class="text-lg sm:text-xl text-muted">
-                            Tracked across AI search platforms in the procurement software category
+                            Comprehensive analysis across 8 procurement software categories with strategic recommendations
                         </p>
                     </div>
 
-                    <!-- Expert Analysis -->
-                    <div class="mb-8 p-4 sm:p-6 bg-white border border-custom rounded-lg">
-                        <div class="text-gray-700 text-base sm:text-lg leading-relaxed space-y-4">
-                            <p>
-                                <strong>Procurify's footprint inside ChatGPT's procurement-software answers is limited and uneven.</strong> Out of 13 high-intent query groups, the brand surfaces only 4 times (30.8% query coverage) with an average rank of 8 and an overall share-of-voice of 3.1%.
-                            </p>
-                            <p>
-                                Competitors such as <strong>SAP Ariba (92% coverage, avg. rank 1)</strong> and <strong>Coupa (92%, avg. rank 2.4)</strong> dominate the conversational results set.
-                            </p>
-                            <p>
-                                Procurify is recognised in four niches—<strong>Budget Control & Tracking (rank 6)</strong>, <strong>Mobile Procurement Apps (rank 8)</strong>, <strong>Mid-Market Solutions (rank 8)</strong>, and <strong>Compliance Management (rank 10)</strong>—but is absent from core categories like Spend Management, Purchase Order Automation, Invoice Processing, and Supplier Management.
-                            </p>
-                            <p>
-                                Content that ChatGPT cites is concentrated on a handful of listicle-style domains (e.g., HRLineup and AppsRunTheWorld contribute 65+% of all citations) where Procurify is rarely mentioned. <strong>Closing these gaps requires targeted "Generative Engine Optimisation" (GEO)</strong> that pairs classic SEO/PR tactics with AI-specific knowledge-source cultivation.
-                            </p>
+                    <!-- Critical Insights Alert -->
+                    <div class="mb-8 p-4 sm:p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-yellow-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Critical Analysis Summary</h3>
+                                <div class="text-gray-700 text-base sm:text-lg leading-relaxed space-y-3">
+                                    <p>
+                                        <strong>Procurify appears in 5 out of 36 total queries (13.9%)</strong> with presence in only 5 out of 12 procurement subcategories, ranking #6.6 average when mentioned.
+                                    </p>
+                                    <p>
+                                        <strong>Major opportunity identified:</strong> 7 procurement subcategories with zero presence where Procurify could achieve top-5 rankings, plus the main "procurement software" category (19 competing brands).
+                                    </p>
+                                    <p>
+                                        <strong>Market positioning gap:</strong> Procurify has 1.5% overall share of voice compared to market leaders SAP Ariba (80.6%) and Coupa (63.9%).
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Performance Metrics -->
+                    <!-- Enhanced Performance Metrics -->
                     <div class="mb-8">
                         <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
-                            OVERALL PERFORMANCE
+                            PERFORMANCE METRICS & PROJECTIONS
                         </span>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
                                 <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
                                     <div class="flex items-end gap-1">
-                                        <span class="text-6xl font-bold text-custom">30.8</span>
-                                        <span class="text-2xl font-bold text-custom mb-2">%</span>
-                                        <div class="ml-3 mb-2">
-                                            <h3 class="text-xl font-bold text-custom">Mention Rate</h3>
+                                        <span class="text-4xl font-bold text-yellow-600">13.9</span>
+                                        <span class="text-xl font-bold text-custom mb-1">%</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Current</h3>
+                                            <p class="text-xs text-muted">Mention Rate</p>
                                         </div>
                                     </div>
-                                    <i data-lucide="trending-up" class="w-6 h-6 text-gray-400"></i>
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-yellow-400"></i>
                                 </div>
-                                <p class="text-sm italic text-muted">Frequency of brand mentions in AI responses</p>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">50%</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">+575% improvement</div>
+                                </div>
                             </div>
                             
                             <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
                                 <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
                                     <div class="flex items-end gap-1">
-                                        <span class="text-6xl font-bold text-custom">8.0</span>
-                                        <span class="text-2xl font-bold text-custom mb-2">/10</span>
-                                        <div class="ml-3 mb-2">
-                                            <h3 class="text-xl font-bold text-custom">Average Rank</h3>
+                                        <span class="text-4xl font-bold text-red-600">5</span>
+                                        <span class="text-xl font-bold text-custom mb-1">/12</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Categories</h3>
+                                            <p class="text-xs text-muted">Covered</p>
                                         </div>
                                     </div>
-                                    <i data-lucide="trending-down" class="w-6 h-6 text-gray-400"></i>
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-red-400"></i>
                                 </div>
-                                <p class="text-sm italic text-muted">Average position in ranked responses (when mentioned)</p>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">5/9</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">+400% coverage</div>
+                                </div>
                             </div>
                             
                             <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
                                 <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
                                     <div class="flex items-end gap-1">
-                                        <span class="text-6xl font-bold text-custom">3.1</span>
-                                        <span class="text-2xl font-bold text-custom mb-2">%</span>
-                                        <div class="ml-3 mb-2">
-                                            <h3 class="text-xl font-bold text-custom">Share of Voice</h3>
+                                        <span class="text-4xl font-bold text-yellow-600">0.8</span>
+                                        <span class="text-xl font-bold text-custom mb-1">%</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Share</h3>
+                                            <p class="text-xs text-muted">of Voice</p>
                                         </div>
                                     </div>
-                                    <i data-lucide="trending-up" class="w-6 h-6 text-gray-400"></i>
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-yellow-400"></i>
                                 </div>
-                                <p class="text-sm italic text-muted">Share of voice compared to competitors</p>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">8%</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">10x growth</div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl font-bold text-yellow-600">6</span>
+                                        <span class="text-xl font-bold text-custom mb-1">th</span>
+                                        <div class="ml-2 mb-1">
+                                            <h3 class="text-lg font-bold text-custom">Best Rank</h3>
+                                            <p class="text-xs text-muted">When Mentioned</p>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-yellow-400"></i>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">3rd</div>
+                                    <div class="text-xs text-green-600">6-month target</div>
+                                    <div class="text-xs text-muted">50% improvement</div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Competitor Analysis -->
+                    <!-- Competitive Landscape with Enhanced Data -->
                     <div class="mb-8 p-4 sm:p-8 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">Competitive Landscape Analysis</h2>
                         <div class="space-y-6 overflow-x-auto">
                             <div class="flex items-center gap-2 sm:gap-4 min-w-0">
-                                <div class="bg-beige-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(369px, 70vw);">
-                                    <span class="text-sm sm:text-base font-semibold text-custom">92.3%</span>
+                                <div class="bg-red-300 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(350px, 58vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">80.6%</span>
                                 </div>
-                                <span class="text-sm sm:text-base font-bold text-custom truncate">SAP Ariba</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">SAP Ariba</span>
+                                    <div class="text-xs text-gray-500">Enterprise procurement dominance • Market leader • Avg rank 1.6</div>
+                                </div>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-4 min-w-0">
-                                <div class="bg-purple-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(369px, 70vw);">
-                                    <span class="text-sm sm:text-base font-semibold text-custom">92.3%</span>
+                                <div class="bg-beige-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(280px, 45vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">63.9%</span>
                                 </div>
-                                <span class="text-sm sm:text-base font-medium text-muted truncate">Coupa</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">Coupa</span>
+                                    <div class="text-xs text-gray-500">Cloud BSM leader • Rapid growth • Avg rank 2.2</div>
+                                </div>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-4 min-w-0">
-                                <div class="bg-blue-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(338px, 60vw);">
-                                    <span class="text-sm sm:text-base font-semibold text-custom">84.6%</span>
+                                <div class="bg-yellow-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(250px, 40vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">58.3%</span>
                                 </div>
-                                <span class="text-sm sm:text-base font-medium text-muted truncate">Basware</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">Ivalua</span>
+                                    <div class="text-xs text-gray-500">Source-to-pay platform • Configurability • Avg rank 5.8</div>
+                                </div>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-4 min-w-0">
-                                <div class="bg-green-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(308px, 50vw);">
-                                    <span class="text-sm sm:text-base font-semibold text-custom">76.9%</span>
+                                <div class="bg-purple-200 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(240px, 38vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">55.6%</span>
                                 </div>
-                                <span class="text-sm sm:text-base font-medium text-muted truncate">GEP SMART</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">Zycus</span>
+                                    <div class="text-xs text-gray-500">AI-powered sourcing • Analytics focus • Avg rank 7.5</div>
+                                </div>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-4 min-w-0">
-                                <div class="bg-gray-300 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(308px, 50vw);">
-                                    <span class="text-sm sm:text-base font-semibold text-custom">76.9%</span>
+                                <div class="bg-green-200 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(220px, 35vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">50.0%</span>
                                 </div>
-                                <span class="text-sm sm:text-base font-medium text-muted truncate">Ivalua</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">Oracle Procurement Cloud</span>
+                                    <div class="text-xs text-gray-500">Oracle ecosystem • ERP integration • Avg rank 2.9</div>
+                                </div>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-4 min-w-0">
-                                <div class="bg-yellow-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(123px, 25vw);">
-                                    <span class="text-sm sm:text-base font-semibold text-custom">30.8%</span>
+                                <div class="bg-orange-200 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(220px, 35vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">50.0%</span>
                                 </div>
-                                <span class="text-sm sm:text-base font-bold text-custom truncate">Procurify</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-medium text-muted truncate">GEP</span>
+                                    <div class="text-xs text-gray-500">Consulting + technology • Source-to-pay • Avg rank 4.7</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-blue-100 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(60px, 10vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">13.9%</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-sm sm:text-base font-bold text-blue-600 truncate">Procurify</span>
+                                    <div class="text-xs text-blue-600">Mid-market procurement software • 5 category presence • Avg rank 6.6</div>
+                                </div>
                             </div>
                             <div class="border-t border-dashed border-custom pt-4">
-                                <p class="text-sm italic text-muted text-center">Mention rates (Top 5 competitors + Procurify)</p>
+                                <p class="text-sm italic text-muted text-center">Mention rates with competitive positioning insights</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Query Categories -->
+                    <!-- High-Value Opportunities Preview -->
                     <div class="mb-8">
-                        <h2 class="text-2xl font-bold text-custom mb-4">Query categories</h2>
-                        <p class="text-lg text-gray-700 mb-8">
-                            An analysis of the categories a company like yours could be mentioned within.
+                        <h2 class="text-2xl font-bold text-custom mb-4">High-Impact Opportunities</h2>
+                        <p class="text-lg text-gray-700 mb-6">
+                            Immediate opportunities to capture market share in underserved procurement software categories.
                         </p>
                         
-                        <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
-                            CATEGORIES MENTIONED
-                        </span>
-                        
-                        <div class="space-y-6 mb-8">
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Budget Control and Tracking</h3>
-                                        <div class="flex gap-4 mb-4">
-                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
-                                            <span class="bg-green-custom text-custom text-sm font-semibold px-3 py-1 rounded">Rank 6</span>
-                                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-green-200">
+                                        <i data-lucide="shopping-cart" class="w-5 h-5 text-green-700"></i>
                                     </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Manages budget allocation, tracking, and control for procurement activities.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-sm">85/100</span>
                                 </div>
-                            </div>
-                            
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Mobile Procurement Applications</h3>
-                                        <div class="flex gap-4 mb-4">
-                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
-                                            <span class="bg-green-custom text-custom text-sm font-semibold px-3 py-1 rounded">Rank 8</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Mobile-first procurement solutions for on-the-go purchasing and approvals.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-                            
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Mid-Market and SME Solutions</h3>
-                                        <div class="flex gap-4 mb-4">
-                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
-                                            <span class="bg-green-custom text-custom text-sm font-semibold px-3 py-1 rounded">Rank 8</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Procurement solutions tailored for mid-market and small-to-medium enterprises.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Contract Management</h3>
+                                <p class="text-sm text-gray-700 mb-3">Strong growth potential in contract lifecycle management with AI-powered features.</p>
+                                <div class="text-xs text-green-700 font-medium">Estimated ranking: Top 5 within 6 months</div>
                             </div>
 
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Compliance and Audit Trail</h3>
-                                        <div class="flex gap-4 mb-4">
-                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
-                                            <span class="bg-green-custom text-custom text-sm font-semibold px-3 py-1 rounded">Rank 10</span>
-                                        </div>
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-blue-200">
+                                        <i data-lucide="dollar-sign" class="w-5 h-5 text-blue-700"></i>
                                     </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Ensures compliance with regulations and maintains comprehensive audit trails.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm">82/100</span>
                                 </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Spend Management</h3>
+                                <p class="text-sm text-gray-700 mb-3">Zero current presence. 13 competing brands with opportunity for comprehensive spend analytics.</p>
+                                <div class="text-xs text-blue-700 font-medium">Estimated ranking: Top 5 within 6 months</div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-purple-200">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-purple-700"></i>
+                                    </div>
+                                    <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm">78/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Vendor Management</h3>
+                                <p class="text-sm text-gray-700 mb-3">Zero current presence. 17 competing brands with opportunity for integrated vendor lifecycle management.</p>
+                                <div class="text-xs text-purple-700 font-medium">Estimated ranking: Top 5 within 8 months</div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-lg">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-2 rounded-lg bg-orange-200">
+                                        <i data-lucide="bar-chart" class="w-5 h-5 text-orange-700"></i>
+                                    </div>
+                                    <span class="bg-orange-500 text-white px-2 py-1 rounded text-sm">75/100</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Bill Management</h3>
+                                <p class="text-sm text-gray-700 mb-3">Zero current presence. 19 competing brands with opportunity for automated bill processing and approval workflows.</p>
+                                <div class="text-xs text-orange-700 font-medium">Estimated ranking: Top 6 within 8 months</div>
                             </div>
                         </div>
 
-                        <!-- Category Gaps -->
-                        <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
-                            CATEGORY GAPS
-                        </span>
-                        
-                        <div class="space-y-6 mb-8">
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">General Procurement Software</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Overall procurement software market category and general solutions.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Spend Management Solutions</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Comprehensive spend analysis and management across all procurement activities.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-                            
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Purchase Order Automation</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Automated purchase order creation, routing, and approval workflows.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Invoice Processing and AP Automation</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Automated invoice processing and accounts payable management.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Supplier Management and Onboarding</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Comprehensive supplier lifecycle management and onboarding processes.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Expense Management Integration</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Integration with expense management systems and travel booking platforms.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Cloud-Based Procurement Platforms</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Cloud-native procurement solutions and SaaS-based platforms.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Integration with ERP Systems</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Seamless integration capabilities with enterprise resource planning systems.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
-
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-start justify-between gap-8">
-                                    <div class="flex-1">
-                                        <h3 class="text-xl font-bold text-custom mb-4 max-w-sm">Custom Workflow and Approval Automation</h3>
-                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
-                                    </div>
-                                    <div class="flex-1 max-w-md">
-                                        <p class="text-base text-gray-700">Customizable workflow engines and automated approval routing systems.</p>
-                                    </div>
-                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
-                                </div>
-                            </div>
+                        <div class="text-center">
+                            <button onclick="showTab('opportunities')" class="btn-primary px-6 py-3 rounded-lg hover:bg-gray-800 inline-flex items-center gap-2">
+                                <i data-lucide="target" class="w-5 h-5"></i>
+                                View Complete Opportunity Analysis
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Action Items -->
-                    <div class="p-6 bg-white border border-custom border-l-4 border-l-orange-400 rounded-lg">
+                    <!-- Next Steps Call-to-Action -->
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-custom border-l-4 border-l-blue-500 rounded-lg">
                         <div class="flex items-start gap-4">
-                            <i data-lucide="alert-circle" class="w-6 h-6 text-orange-400 flex-shrink-0 mt-1"></i>
+                            <i data-lucide="rocket" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"></i>
                             <div>
-                                <h3 class="text-lg font-bold text-custom mb-2">Immediate Action Required</h3>
-                                <p class="text-gray-700 mb-4">
-                                    Your brand is missing from critical procurement categories with 69% of queries showing zero mentions. Focus on creating content that positions your brand in Spend Management, Purchase Order Automation, Invoice Processing, Supplier Management, and ERP Integration conversations.
-                                </p>
-                                <button class="btn-primary px-4 py-2 rounded hover:bg-gray-800">
-                                    View Optimization Plan
-                                </button>
+                                <h3 class="text-lg font-bold text-custom mb-2">Recommended Immediate Actions</h3>
+                                <div class="space-y-2 text-gray-700 mb-4">
+                                    <p>• <strong>Week 1-2:</strong> Launch foundational procurement template library with dedicated landing pages and email campaigns</p>
+                                    <p>• <strong>Week 3-4:</strong> Establish competitive positioning content and begin organic search optimization</p>
+                                    <p>• <strong>Month 1 Focus:</strong> Build content foundation and capture early market awareness</p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <button onclick="showTab('recommendations')" class="btn-primary px-4 py-2 rounded hover:bg-gray-800">
+                                        View 90-Day Plan
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -480,38 +456,38 @@
             <div id="competitors-tab" class="tab-content hidden">
                 <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
                     <div class="mb-8">
-                        <h1 class="text-3xl font-bold text-custom mb-2">Competitor Intelligence</h1>
-                        <p class="text-xl text-muted">Strategic analysis of how competitors perform across AI platforms</p>
+                        <h1 class="text-3xl font-bold text-custom mb-2">Competitive Intelligence</h1>
+                        <p class="text-xl text-muted">Deep-dive analysis of how competitors dominate procurement software platform rankings</p>
                     </div>
 
-                    <!-- Executive Summary -->
+                    <!-- Enhanced Executive Summary -->
                     <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
-                        <h2 class="text-xl font-bold text-custom mb-4">Executive Summary</h2>
+                        <h2 class="text-xl font-bold text-custom mb-4">Market Dominance Analysis</h2>
                         <div class="text-gray-700 text-base leading-relaxed space-y-4">
                             <p>
-                                <strong>Your competitive landscape is dominated by three major players</strong> who collectively control ~50% of AI conversation share. SAP Ariba leads with superior content distribution and citation authority, while Coupa excels in modern procurement workflows.
+                                <strong>The competitive landscape is dominated by 6 major players:</strong> SAP Ariba (80.6% mention rate), Coupa (63.9%), Ivalua (58.3%), Zycus (55.6%), Oracle Procurement Cloud (50.0%), and GEP (50.0%).
                             </p>
                             <p>
-                                <strong>Key vulnerability:</strong> Oracle's declining AI presence (-12% QoQ) presents an opportunity to capture mindshare in enterprise procurement conversations, particularly around ERP integration use cases.
+                                <strong>Key vulnerability identified:</strong> Despite 80+ competing brands, no major player specializes in mid-market procurement with streamlined implementation where Procurify has advantages. Top competitors focus on enterprise complexity.
                             </p>
                             <p>
-                                <strong>Recommended strategy:</strong> Target Basware's weak categories (Strategic Sourcing, Analytics) while building authority in your current strength areas to defend against SAP Ariba's expansion.
+                                <strong>Market positioning gap:</strong> Procurify appears in only 5 out of 36 queries (13.9%) while market leaders have 50%+ mention rates, indicating massive opportunity for category expansion and brand visibility growth.
                             </p>
                         </div>
                     </div>
 
-                    <!-- Top Competitors Grid -->
+                    <!-- Enhanced Competitor Grid -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <!-- SAP Ariba -->
+                        <!-- SAP Ariba - Enhanced -->
                         <div class="p-6 bg-white border border-custom rounded-lg">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <span class="font-bold text-custom">SA</span>
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-blue-600">SA</span>
                                     </div>
                                     <div>
                                         <h3 class="text-lg font-bold text-custom">SAP Ariba</h3>
-                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">High Threat</span>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Critical Threat</span>
                                     </div>
                                 </div>
                                 <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
@@ -519,55 +495,52 @@
 
                             <div class="grid grid-cols-3 gap-4 mb-4">
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">15.4%</div>
-                                    <div class="text-xs text-muted">Share of Voice</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">92%</div>
+                                    <div class="text-2xl font-bold text-custom">80.6%</div>
                                     <div class="text-xs text-muted">Mention Rate</div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">1.0</div>
+                                    <div class="text-2xl font-bold text-custom">1.6</div>
                                     <div class="text-xs text-muted">Avg Rank</div>
                                 </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h4 class="text-sm font-bold text-custom mb-2">Strong Categories</h4>
-                                <div class="flex flex-wrap gap-1">
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Contract Management</span>
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Supplier Management</span>
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Spend Analysis</span>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">29</div>
+                                    <div class="text-xs text-muted">Mentions</div>
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Categories</h4>
+                                <h4 class="text-sm font-bold text-custom mb-2">Dominance Factors</h4>
                                 <div class="flex flex-wrap gap-1">
-                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Mobile Apps</span>
-                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Small Business</span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Enterprise Scale</span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">SAP Integration</span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Market Leader</span>
                                 </div>
                             </div>
 
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-muted">AI Presence: <strong>Dominant</strong></span>
-                                <button class="border border-custom px-3 py-1 rounded text-sm hover:bg-gray-50 flex items-center gap-2 text-custom">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                    Analyze
-                                </button>
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Areas</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">SMB Market</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Implementation Speed</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">User Experience</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Procurify's Opportunity:</strong> Position streamlined procurement workflows as more efficient than complex enterprise solutions for mid-market companies.
                             </div>
                         </div>
 
-                        <!-- Coupa -->
+                        <!-- Coupa - Enhanced -->
                         <div class="p-6 bg-white border border-custom rounded-lg">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <span class="font-bold text-custom">CP</span>
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-purple-600">CP</span>
                                     </div>
                                     <div>
                                         <h3 class="text-lg font-bold text-custom">Coupa</h3>
-                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">High Threat</span>
+                                        <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">High Threat</span>
                                     </div>
                                 </div>
                                 <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
@@ -575,54 +548,104 @@
 
                             <div class="grid grid-cols-3 gap-4 mb-4">
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">18.5%</div>
-                                    <div class="text-xs text-muted">Share of Voice</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">92%</div>
+                                    <div class="text-2xl font-bold text-custom">63.9%</div>
                                     <div class="text-xs text-muted">Mention Rate</div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">2.4</div>
+                                    <div class="text-2xl font-bold text-custom">2.2</div>
                                     <div class="text-xs text-muted">Avg Rank</div>
                                 </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h4 class="text-sm font-bold text-custom mb-2">Strong Categories</h4>
-                                <div class="flex flex-wrap gap-1">
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Spend Management</span>
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">AP Automation</span>
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Travel & Expense</span>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">23</div>
+                                    <div class="text-xs text-muted">Mentions</div>
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Categories</h4>
+                                <h4 class="text-sm font-bold text-custom mb-2">Strength Areas</h4>
                                 <div class="flex flex-wrap gap-1">
-                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Risk Management</span>
-                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Compliance</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Cloud BSM</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Spend Visibility</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Analytics</span>
                                 </div>
                             </div>
 
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-muted">AI Presence: <strong>Strong</strong></span>
-                                <button class="border border-custom px-3 py-1 rounded text-sm hover:bg-gray-50 flex items-center gap-2 text-custom">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                    Analyze
-                                </button>
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Weak Spots</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Implementation Time</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">SMB Complexity</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Cost Structure</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Procurify's Opportunity:</strong> Position faster implementation and simpler workflows vs Coupa's complex BSM approach for mid-market companies.
                             </div>
                         </div>
 
-                        <!-- Oracle -->
+                        <!-- Ivalua - Enhanced -->
                         <div class="p-6 bg-white border border-custom rounded-lg">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <span class="font-bold text-custom">OR</span>
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-green-600">IV</span>
                                     </div>
                                     <div>
-                                        <h3 class="text-lg font-bold text-custom">Oracle Procurement</h3>
+                                        <h3 class="text-lg font-bold text-custom">Ivalua</h3>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">58.3%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">5.8</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">21</div>
+                                    <div class="text-xs text-muted">Mentions</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Strength Areas</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Configurability</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Source-to-Pay</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Flexibility</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Weak Spots</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Over-Configuration</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Implementation Complexity</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">User Experience</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Procurify's Opportunity:</strong> Offer pre-configured workflows vs Ivalua's extensive configuration requirements that overwhelm mid-market users.
+                            </div>
+                        </div>
+
+                        <!-- Zycus - Enhanced -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-orange-600">ZY</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Zycus</h3>
                                         <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
                                     </div>
                                 </div>
@@ -631,219 +654,137 @@
 
                             <div class="grid grid-cols-3 gap-4 mb-4">
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">16.9%</div>
-                                    <div class="text-xs text-muted">Share of Voice</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">62%</div>
+                                    <div class="text-2xl font-bold text-custom">55.6%</div>
                                     <div class="text-xs text-muted">Mention Rate</div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">2.5</div>
+                                    <div class="text-2xl font-bold text-custom">7.5</div>
                                     <div class="text-xs text-muted">Avg Rank</div>
                                 </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h4 class="text-sm font-bold text-custom mb-2">Strong Categories</h4>
-                                <div class="flex flex-wrap gap-1">
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">ERP Integration</span>
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Large Enterprise</span>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">20</div>
+                                    <div class="text-xs text-muted">Mentions</div>
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Categories</h4>
+                                <h4 class="text-sm font-bold text-custom mb-2">Strength Areas</h4>
                                 <div class="flex flex-wrap gap-1">
-                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">User Experience</span>
-                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">SMB Market</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">AI Sourcing</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Analytics</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Spend Analysis</span>
                                 </div>
                             </div>
 
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-muted">AI Presence: <strong>Declining</strong></span>
-                                <button class="border border-custom px-3 py-1 rounded text-sm hover:bg-gray-50 flex items-center gap-2 text-custom">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                    Analyze
-                                </button>
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Weak Spots</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Modern UX</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Mobile Experience</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">SMB Focus</span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs text-gray-600 mb-3">
+                                <strong>Procurify's Opportunity:</strong> Target modern user experience and mobile-first approach vs Zycus's traditional enterprise interface.
                             </div>
                         </div>
 
-                        <!-- Basware -->
-                        <div class="p-6 bg-white border border-custom rounded-lg">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <span class="font-bold text-custom">BW</span>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-bold text-custom">Basware</h3>
-                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
-                                    </div>
-                                </div>
-                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-4 mb-4">
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">12.3%</div>
-                                    <div class="text-xs text-muted">Share of Voice</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">85%</div>
-                                    <div class="text-xs text-muted">Mention Rate</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-custom">7.0</div>
-                                    <div class="text-xs text-muted">Avg Rank</div>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h4 class="text-sm font-bold text-custom mb-2">Strong Categories</h4>
-                                <div class="flex flex-wrap gap-1">
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Invoice Processing</span>
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">P2P</span>
-                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">European Market</span>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Categories</h4>
-                                <div class="flex flex-wrap gap-1">
-                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Strategic Sourcing</span>
-                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Analytics</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-muted">AI Presence: <strong>Growing</strong></span>
-                                <button class="border border-custom px-3 py-1 rounded text-sm hover:bg-gray-50 flex items-center gap-2 text-custom">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                    Analyze
-                                </button>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Category Battleground Analysis -->
                     <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
-                        <h2 class="text-xl font-bold text-custom mb-6">Category Battleground Analysis</h2>
+                        <h2 class="text-xl font-bold text-custom mb-6">Market Share by Category</h2>
                         <div class="space-y-6">
-                            <!-- Categories where Procurify appears -->
+                            <!-- Where Procurify appears -->
                             <div class="border-b border-custom pb-4">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h3 class="text-lg font-medium text-custom">Budget Control and Tracking</h3>
-                                    <span class="bg-yellow-custom text-custom px-2 py-1 rounded text-sm">We rank #6</span>
+                                    <h3 class="text-lg font-medium text-custom">Purchase Request Management</h3>
+                                    <span class="bg-orange-200 text-custom px-2 py-1 rounded text-sm">Procurify ranks #7</span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <i data-lucide="target" class="w-4 h-4 text-muted"></i>
-                                    <div class="flex gap-3">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">SAP</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#1</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">Coupa</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#2</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">Procurify</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#6</span>
-                                        </div>
+                                    <div class="flex gap-3 text-sm">
+                                        <span class="text-muted">21 total brands competing, led by enterprise solutions</span>
+                                        <span class="font-bold text-blue-600">• Procurify has 2.8% share of voice in this category</span>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Major gaps with competitor analysis -->
                             <div class="border-b border-custom pb-4">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h3 class="text-lg font-medium text-custom">Mobile Procurement Applications</h3>
-                                    <span class="bg-yellow-custom text-custom px-2 py-1 rounded text-sm">We rank #8</span>
+                                    <h3 class="text-lg font-medium text-custom">Spend Approval Systems</h3>
+                                    <span class="bg-orange-200 text-custom px-2 py-1 rounded text-sm">Procurify ranks #8</span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <i data-lucide="target" class="w-4 h-4 text-muted"></i>
-                                    <div class="flex gap-3">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">Coupa</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#1</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">SAP</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#2</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">Procurify</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#8</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Major gaps -->
-                            <div class="border-b border-custom pb-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="text-lg font-medium text-custom">Spend Management Solutions</h3>
-                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Not mentioned</span>
-                                </div>
-                                <div class="flex items-center gap-4">
-                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
-                                    <div class="flex gap-3">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">Coupa</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#1</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">SAP</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#2</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-bold text-custom">Oracle</span>
-                                            <span class="rank-badge text-xs px-2 py-1 rounded">#3</span>
-                                        </div>
+                                    <div class="text-sm">
+                                        <span class="text-muted">19 total brands competing, dominated by enterprise solutions</span>
+                                        <div class="font-bold text-blue-600 mt-1">• Procurify has 2.8% share of voice in approval workflows</div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="border-b border-custom pb-4">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h3 class="text-lg font-medium text-custom">Purchase Order Automation</h3>
-                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Not mentioned</span>
+                                    <h3 class="text-lg font-medium text-custom">Purchase Order Management</h3>
+                                    <span class="bg-green-200 text-custom px-2 py-1 rounded text-sm">Procurify ranks #5</span>
                                 </div>
                                 <div class="flex items-center gap-4">
-                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm font-bold text-custom">SAP</span>
-                                        <span class="rank-badge text-xs px-2 py-1 rounded">#1</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm font-bold text-custom">Coupa</span>
-                                        <span class="rank-badge text-xs px-2 py-1 rounded">#2</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm font-bold text-custom">Oracle</span>
-                                        <span class="rank-badge text-xs px-2 py-1 rounded">#3</span>
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">23 total brands competing, Procurify's best performance</span>
+                                        <div class="font-bold text-green-600 mt-1">• Strong position: Best ranking at #5 with 2.6% share of voice</div>
                                     </div>
                                 </div>
                             </div>
 
-                            
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Budget Management</h3>
+                                    <span class="bg-orange-200 text-custom px-2 py-1 rounded text-sm">Procurify ranks #7</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">19 total brands competing, growing importance for spend control</span>
+                                        <div class="font-bold text-blue-600 mt-1">• Procurify has 2.8% share of voice in budget planning tools</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Invoice Processing</h3>
+                                    <span class="bg-green-200 text-custom px-2 py-1 rounded text-sm">Procurify ranks #6</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="text-sm">
+                                        <span class="text-muted">20 total brands competing, automation-focused market</span>
+                                        <div class="font-bold text-green-600 mt-1">• Highest category share at 3.3% voice share - best performance</div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
-                    <!-- Strategic Recommendations -->
-                    <div class="p-6 bg-white border border-custom border-l-4 border-l-blue-400 rounded-lg">
+                    <!-- Strategic Competitive Response -->
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-custom border-l-4 border-l-blue-400 rounded-lg">
                         <div class="flex items-start gap-4">
-                            <i data-lucide="award" class="w-6 h-6 text-blue-400 flex-shrink-0 mt-1"></i>
+                            <i data-lucide="zap" class="w-6 h-6 text-blue-400 flex-shrink-0 mt-1"></i>
                             <div>
-                                <h3 class="text-lg font-bold text-custom mb-2">Strategic Opportunities</h3>
+                                <h3 class="text-lg font-bold text-custom mb-2">Competitive Strategy Recommendations</h3>
                                 <div class="space-y-2 text-gray-700">
-                                    <p>• <strong>Attack Oracle's weakness:</strong> Create content targeting "ERP integration challenges" to capture their declining mindshare</p>
-                                    <p>• <strong>Defend mobile strength:</strong> Amplify mobile procurement content to maintain competitive advantage over SAP Ariba</p>
-                                    <p>• <strong>Exploit Basware gaps:</strong> Target strategic sourcing and analytics conversations where they're vulnerable</p>
-                                    <p>• <strong>Counter Coupa's growth:</strong> Focus on compliance and risk management topics where they're weaker</p>
+                                    <p>• <strong>Differentiate from SAP Ariba:</strong> Position mid-market simplicity as more accessible than complex enterprise solutions</p>
+                                    <p>• <strong>Challenge Coupa's complexity:</strong> Emphasize ease of implementation vs lengthy enterprise deployments</p>
+                                    <p>• <strong>Target Oracle's integration lock-in:</strong> Focus on flexible integrations vs vendor ecosystem dependency</p>
+                                    <p>• <strong>Compete with Ivalua's customization overhead:</strong> Build streamlined workflows vs over-engineered configurations</p>
                                 </div>
-                                <button class="btn-primary px-4 py-2 rounded hover:bg-gray-800 mt-4">
-                                    Generate Battle Plan
+                                <button onclick="showTab('recommendations')" class="btn-primary px-4 py-2 rounded hover:bg-gray-800 mt-4">
+                                    View Implementation Plan
                                 </button>
                             </div>
                         </div>
@@ -851,301 +792,746 @@
                 </div>
             </div>
 
-            <!-- Insights Tab -->
-            <div id="insights-tab" class="tab-content hidden">
+            <!-- Enhanced Opportunities Tab -->
+            <div id="opportunities-tab" class="tab-content hidden">
                 <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
                     <div class="mb-8">
-                        <h1 class="text-3xl font-bold text-custom mb-2">Expert Insights & Reports</h1>
-                        <p class="text-xl text-muted">AI-powered recommendations from our procurement marketing experts</p>
+                        <h1 class="text-3xl font-bold text-custom mb-2">Market Opportunities Matrix</h1>
+                        <p class="text-xl text-muted">Data-driven analysis of high-impact opportunities to improve procurement market visibility</p>
                     </div>
 
-                    <!-- Executive Brief -->
-                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
-                        <div class="flex items-start gap-4 mb-4">
-                            <i data-lucide="file-text" class="w-6 h-6 text-custom flex-shrink-0 mt-1"></i>
-                            <div>
-                                <h2 class="text-xl font-bold text-custom mb-2">Executive Brief: Q1 2025 GEO Analysis</h2>
-                                <span class="bg-yellow-custom text-custom px-2 py-1 rounded text-sm mb-4 inline-block">Generated Today</span>
-                            </div>
-                        </div>
-                        
-                        <div class="text-gray-700 text-base leading-relaxed mb-6 space-y-4">
-                            <p>
-                                <strong>Bottom Line:</strong> Your GEO performance is significantly lagging category leaders, with critical gaps in content authority and AI conversation presence. However, emerging opportunities exist as Oracle's influence wanes and mobile-first procurement gains momentum.
-                            </p>
-                            <p>
-                                <strong>Key Challenge:</strong> AI models draw 65% of procurement insights from just 5 publications where your brand has minimal presence. This content authority gap is your biggest barrier to AI visibility.
-                            </p>
-                            <p>
-                                <strong>Immediate Action Required:</strong> Implement our 3-phase content strategy to capture declining Oracle mindshare while building authority in your strength categories. Conservative estimates suggest 110% improvement in mention rates within 6 months.
-                            </p>
-                        </div>
-
-                        <button class="btn-primary px-4 py-2 rounded hover:bg-gray-800 flex items-center gap-2">
-                            <i data-lucide="download" class="w-4 h-4"></i>
-                            Download Full Report
-                        </button>
-                    </div>
-
-                    <!-- Strategic Insights -->
+                    <!-- Opportunity Scoring Matrix -->
                     <div class="mb-8">
-                        <h2 class="text-2xl font-bold text-custom mb-6">Strategic Insights</h2>
-                        <div class="grid grid-cols-1 gap-6">
-                            <!-- Critical Insight -->
-                            <div class="p-6 bg-white border-2 border-red-200 rounded-lg">
-                                <div class="flex items-start gap-4 mb-4">
-                                    <div class="p-2 rounded-lg bg-red-50">
-                                        <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>
+                        <h2 class="text-2xl font-bold text-custom mb-6">Priority Opportunities (Ranked by Impact Score)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Main Procurement Software - Highest Priority -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-green-200">
+                                        <i data-lucide="shopping-cart" class="w-6 h-6 text-green-700"></i>
                                     </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm border-0">Critical</span>
-                                            <span class="bg-gray-600 text-white text-xs px-2 py-1 rounded">High Impact</span>
-                                        </div>
-                                        <h3 class="text-lg font-bold text-custom mb-2">Content Authority Gap</h3>
+                                    <div class="text-right">
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-bold">95/100</span>
+                                        <div class="text-xs text-green-700 mt-1">Critical Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Main Procurement Software Category</h3>
+                                <p class="text-sm text-gray-700 mb-4">Zero presence in the primary "procurement software" category. Critical opportunity to establish thought leadership in the main category with 19 competing brands.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-orange-600">Medium (19 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-green-600">Perfect (100%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-green-600">3-4 months</span>
                                     </div>
                                 </div>
                                 
-                                <p class="text-gray-700 mb-4 leading-relaxed">Your brand lacks citations from high-authority procurement publications that AI models prioritize. HRLineup and ProcurementMag dominate 65% of citations but rarely mention your brand.</p>
-                                
-                                <div class="bg-gray-800 rounded-lg p-3">
-                                    <h4 class="text-sm font-bold text-white mb-1">Recommended Action</h4>
-                                    <p class="text-sm text-gray-100">Establish relationships with 5 key procurement publications within 60 days</p>
-                                </div>
-                            </div>
-
-                            <!-- Opportunity Insight -->
-                            <div class="p-6 bg-white border-2 border-yellow-200 rounded-lg">
-                                <div class="flex items-start gap-4 mb-4">
-                                    <div class="p-2 rounded-lg bg-yellow-50">
-                                        <i data-lucide="lightbulb" class="w-5 h-5 text-yellow-500"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="bg-yellow-500 text-white px-2 py-1 rounded text-sm border-0">Opportunity</span>
-                                            <span class="bg-gray-600 text-white text-xs px-2 py-1 rounded">Medium Impact</span>
-                                        </div>
-                                        <h3 class="text-lg font-bold text-custom mb-2">Oracle's Declining Share</h3>
-                                    </div>
-                                </div>
-                                
-                                <p class="text-gray-700 mb-4 leading-relaxed">Oracle's AI presence has dropped 12% QoQ, creating an opening in enterprise procurement conversations. Their weakness in user experience topics presents a strategic opening.</p>
-                                
-                                <div class="bg-gray-800 rounded-lg p-3">
-                                    <h4 class="text-sm font-bold text-white mb-1">Recommended Action</h4>
-                                    <p class="text-sm text-gray-100">Create 'vs Oracle' comparison content focusing on UX advantages</p>
+                                <div class="bg-white p-3 rounded border border-green-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Launch comprehensive procurement content strategy</li>
+                                        <li>• Create procurement thought leadership content</li>
+                                        <li>• Build spend management expertise positioning</li>
+                                    </ul>
                                 </div>
                             </div>
 
-                            <!-- Strategic Insight -->
-                            <div class="p-6 bg-white border-2 border-blue-200 rounded-lg">
-                                <div class="flex items-start gap-4 mb-4">
-                                    <div class="p-2 rounded-lg bg-blue-50">
-                                        <i data-lucide="target" class="w-5 h-5 text-blue-500"></i>
+                            
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-blue-200">
+                                        <i data-lucide="video" class="w-6 h-6 text-blue-700"></i>
                                     </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm border-0">Strategic</span>
-                                            <span class="bg-gray-600 text-white text-xs px-2 py-1 rounded">High Impact</span>
-                                        </div>
-                                        <h3 class="text-lg font-bold text-custom mb-2">Mobile Advantage Underutilized</h3>
+                                    <div class="text-right">
+                                        <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm font-bold">88/100</span>
+                                        <div class="text-xs text-blue-700 mt-1">High Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Expense Reports Management</h3>
+                                <p class="text-sm text-gray-700 mb-4">Zero current presence. 15 competing brands with opportunity for integrated expense management within procurement workflows.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-blue-600">Low (18 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-blue-600">Very Good (92%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-blue-600">4-6 months</span>
                                     </div>
                                 </div>
                                 
-                                <p class="text-gray-700 mb-4 leading-relaxed">You rank #6 in mobile procurement but this strength isn't leveraged across related categories. Mobile-first procurement is growing 34% YoY in AI queries.</p>
-                                
-                                <div class="bg-gray-800 rounded-lg p-3">
-                                    <h4 class="text-sm font-bold text-white mb-1">Recommended Action</h4>
-                                    <p class="text-sm text-gray-100">Amplify mobile-first messaging across all procurement categories</p>
+                                <div class="bg-white p-3 rounded border border-blue-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Develop expense integration capability</li>
+                                        <li>• Integrate with existing purchase order workflows</li>
+                                        <li>• Position as "procurement-integrated expense management"</li>
+                                    </ul>
                                 </div>
                             </div>
 
-                            <!-- Success Insight -->
-                            <div class="p-6 bg-white border-2 border-green-200 rounded-lg">
-                                <div class="flex items-start gap-4 mb-4">
-                                    <div class="p-2 rounded-lg bg-green-50">
-                                        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+                            <!-- Candidate Insights -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-purple-200">
+                                        <i data-lucide="users" class="w-6 h-6 text-purple-700"></i>
                                     </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="bg-green-500 text-white px-2 py-1 rounded text-sm border-0">Success</span>
-                                            <span class="bg-gray-600 text-white text-xs px-2 py-1 rounded">Medium Impact</span>
-                                        </div>
-                                        <h3 class="text-lg font-bold text-custom mb-2">Risk Management Leadership</h3>
+                                    <div class="text-right">
+                                        <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm font-bold">85/100</span>
+                                        <div class="text-xs text-purple-700 mt-1">High Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Spend Management Analytics</h3>
+                                <p class="text-sm text-gray-700 mb-4">Zero current presence but perfect fit for Procurify's core spend management and data analysis strengths. Only 13 competing brands in this specialized category.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-green-600">Low (13 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-green-600">Excellent (95%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 3:</span>
+                                        <span class="font-bold text-purple-600">5-8 months</span>
                                     </div>
                                 </div>
                                 
-                                <p class="text-gray-700 mb-4 leading-relaxed">Your #3 ranking in risk management represents a competitive moat. This category has 43% higher conversion rates than other procurement topics.</p>
+                                <div class="bg-white p-3 rounded border border-purple-200">
+                                    <h4 class="text-xs font-bold text-custom mb-1">Immediate Actions:</h4>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li>• Develop spend analytics dashboard</li>
+                                        <li>• Create procurement insights reports</li>
+                                        <li>• Build predictive spend models</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Secondary Opportunities -->
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-orange-200">
+                                        <i data-lucide="calendar" class="w-6 h-6 text-orange-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-orange-500 text-white px-2 py-1 rounded text-sm font-bold">78/100</span>
+                                        <div class="text-xs text-orange-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">ERP Integration & Connectivity</h3>
+                                <p class="text-sm text-gray-700 mb-4">Competitive landscape but opportunity to integrate seamlessly with Procurify's procurement process for end-to-end solution.</p>
                                 
-                                <div class="bg-gray-800 rounded-lg p-3">
-                                    <h4 class="text-sm font-bold text-white mb-1">Recommended Action</h4>
-                                    <p class="text-sm text-gray-100">Double down on risk-focused content and thought leadership</p>
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-orange-600">High (21 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-orange-600">Good (82%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-orange-600">6-10 months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-teal-200">
+                                        <i data-lucide="trending-up" class="w-6 h-6 text-teal-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-teal-500 text-white px-2 py-1 rounded text-sm font-bold">75/100</span>
+                                        <div class="text-xs text-teal-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Spending Cards Management</h3>
+                                <p class="text-sm text-gray-700 mb-4">20 brands competing in spending card management. Opportunity to expand beyond procurement into spend control.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-teal-600">High (22 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-teal-600">Good (78%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-teal-600">8-12 months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="opportunity-card p-6 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="p-3 rounded-lg bg-gray-200">
+                                        <i data-lucide="building" class="w-6 h-6 text-gray-700"></i>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="bg-gray-500 text-white px-2 py-1 rounded text-sm font-bold">72/100</span>
+                                        <div class="text-xs text-gray-700 mt-1">Medium Priority</div>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Integrated Spend Management Hub</h3>
+                                <p class="text-sm text-gray-700 mb-4">Competitive landscape in unified spend platforms. Opportunity for Procurify to create comprehensive procurement management hub.</p>
+                                
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Competition Level:</span>
+                                        <span class="font-bold text-gray-600">High (20 brands)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Market Fit:</span>
+                                        <span class="font-bold text-gray-600">Good (75%)</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-muted">Time to Top 5:</span>
+                                        <span class="font-bold text-gray-600">10-15 months</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 90-Day Action Plan -->
+                    <!-- Citation Authority Gap Analysis -->
                     <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
-                        <h2 class="text-xl font-bold text-custom mb-6">90-Day Action Plan</h2>
-                        <div class="space-y-6">
-                            <div class="border-l-4 border-custom pl-6">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <h3 class="text-lg font-bold text-custom">Phase 1: Foundation (Weeks 1-4)</h3>
-                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Critical Priority</span>
+                        <h2 class="text-xl font-bold text-custom mb-6">Critical Citation Gaps</h2>
+                        <p class="text-gray-700 mb-6">Analysis of high-authority domains that cite competitors but not Procurify. These represent the most valuable opportunities for building procurement software authority.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Wikipedia - Critical -->
+                            <div class="border-2 border-red-200 bg-red-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-red-200">
+                                            <i data-lucide="globe" class="w-5 h-5 text-red-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">Wikipedia</h3>
+                                    </div>
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded text-sm">Critical Gap</span>
                                 </div>
-                                <ul class="space-y-2">
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Audit current content against AI citation sources</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Identify and contact top 5 procurement publications</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Create editorial calendar for thought leadership content</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Establish AI query monitoring dashboard</span>
-                                    </li>
-                                </ul>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">14</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Authority Score:</span>
+                                        <span class="font-bold ml-2 text-red-600">Highest</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Competitors Cited:</span>
+                                        <span class="font-bold ml-2">SAP Ariba, Coupa, Jaggaer</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Procurify Citations:</span>
+                                        <span class="font-bold text-red-600 ml-2">0</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-red-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Create Wikipedia page for "procurement software platforms"</li>
+                                        <li>• Enhance existing spend management entries</li>
+                                        <li>• Establish editorial relationships with contributors</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-red-700">
+                                        <strong>Impact:</strong> Could improve mention rate by 10-15% within 2 months
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="border-l-4 border-custom pl-6">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <h3 class="text-lg font-bold text-custom">Phase 2: Content Offensive (Weeks 5-12)</h3>
-                                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">High Priority</span>
+                            <!-- LinkedIn - High Impact -->
+                            <div class="border-2 border-orange-200 bg-orange-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-orange-200">
+                                            <i data-lucide="linkedin" class="w-5 h-5 text-orange-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">LinkedIn</h3>
+                                    </div>
+                                    <span class="bg-orange-500 text-white px-2 py-1 rounded text-sm">High Impact</span>
                                 </div>
-                                <ul class="space-y-2">
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Publish 3x weekly procurement insights targeting gap categories</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Launch 'Procurement Innovation' editorial series</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Create comparison guides for vs Oracle positioning</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Develop mobile procurement case studies and whitepapers</span>
-                                    </li>
-                                </ul>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">9</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Content Type:</span>
+                                        <span class="font-bold ml-2">Procurement software articles</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Reach:</span>
+                                        <span class="font-bold ml-2">Procurement professional audience</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Procurify Citations:</span>
+                                        <span class="font-bold text-orange-600 ml-2">Limited</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-orange-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Pitch thought leadership articles to procurement publications</li>
+                                        <li>• Develop spend management case studies and best practices</li>
+                                        <li>• Build relationships with procurement influencers</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-orange-700">
+                                        <strong>Impact:</strong> Could add 5-8 citations across procurement audience
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="border-l-4 border-custom pl-6">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <h3 class="text-lg font-bold text-custom">Phase 3: Authority Building (Weeks 13-24)</h3>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Medium Priority</span>
+                            <!-- TechRadar - Medium Impact -->
+                            <div class="border-2 border-yellow-200 bg-yellow-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-yellow-200">
+                                            <i data-lucide="radar" class="w-5 h-5 text-yellow-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">TechRadar</h3>
+                                    </div>
+                                    <span class="bg-yellow-500 text-white px-2 py-1 rounded text-sm">Medium Impact</span>
                                 </div>
-                                <ul class="space-y-2">
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Establish speaker bureau for procurement conferences</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Launch procurement podcast/webinar series</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Create procurement benchmarking tools and calculators</span>
-                                    </li>
-                                    <li class="flex items-start gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
-                                        <span class="text-gray-700">Build strategic partnerships with complementary vendors</span>
-                                    </li>
-                                </ul>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Total Citations:</span>
+                                        <span class="font-bold ml-2">2</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Content Type:</span>
+                                        <span class="font-bold ml-2">Procurement tool reviews</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Audience:</span>
+                                        <span class="font-bold ml-2">Tech decision makers</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Procurify Citations:</span>
+                                        <span class="font-bold text-yellow-600 ml-2">0</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-yellow-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Reach out to TechRadar procurement software editors</li>
+                                        <li>• Pitch procurement platform review</li>
+                                        <li>• Provide technical demos and trials</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-yellow-700">
+                                        <strong>Impact:</strong> Authoritative review could boost tech credibility
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Industry Publications - Strategic -->
+                            <div class="border-2 border-blue-200 bg-blue-50 p-6 rounded-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 rounded-lg bg-blue-200">
+                                            <i data-lucide="newspaper" class="w-5 h-5 text-blue-700"></i>
+                                        </div>
+                                        <h3 class="font-bold text-custom">Industry Publications</h3>
+                                    </div>
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm">Strategic</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <span class="text-muted">Key Sources:</span>
+                                        <span class="font-bold ml-2">Procurement Magazine, Spend Matters</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Focus:</span>
+                                        <span class="font-bold ml-2">procurement automation tools</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Audience:</span>
+                                        <span class="font-bold ml-2">Technical professionals</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Opportunity:</span>
+                                        <span class="font-bold text-blue-600 ml-2">High</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-blue-200">
+                                    <h4 class="text-sm font-bold text-custom mb-2">Action Plan:</h4>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Target procurement tech publication writers</li>
+                                        <li>• Provide expert commentary on industry trends</li>
+                                        <li>• Share research and case study data</li>
+                                    </ul>
+                                    <div class="mt-2 text-xs text-blue-700">
+                                        <strong>Impact:</strong> Industry authority for technical audience
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- KPI Projections -->
+                    <!-- Implementation Priority Matrix -->
+                    <div class="p-6 bg-gradient-to-r from-green-50 to-blue-50 border border-custom border-l-4 border-l-green-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="target" class="w-6 h-6 text-green-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-3">Recommended Implementation Sequence</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="bg-white p-4 rounded border border-green-200">
+                                        <h4 class="font-bold text-custom mb-2">Month 1: Foundation</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Launch comprehensive procurement template library</li>
+                                            <li>• Create dedicated landing pages for each template category</li>
+                                            <li>• Develop email nurture campaigns for template users</li>
+                                            <li>• Establish competitive positioning and comparison content</li>
+                                        </ul>
+                                        <div class="text-xs text-green-600 mt-2 font-medium">Focus: Content foundation & early awareness</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded border border-blue-200">
+                                        <h4 class="font-bold text-custom mb-2">Month 2: Content Expansion</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Launch bottom-funnel conversion content and procurement automation cookbooks</li>
+                                            <li>• Expand template library with advanced procurement use cases</li>
+                                            <li>• Develop technical implementation guides and tutorials</li>
+                                            <li>• Create thought leadership content positioning Procurify expertise</li>
+                                        </ul>
+                                        <div class="text-xs text-blue-600 mt-2 font-medium">Focus: Conversion optimization & expertise building</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded border border-purple-200">
+                                        <h4 class="font-bold text-custom mb-2">Month 3: Scale & Amplify</h4>
+                                        <ul class="text-sm text-gray-700 space-y-1">
+                                            <li>• Launch targeted paid advertising campaigns across channels</li>
+                                            <li>• Continue expanding content library and template offerings</li>
+                                            <li>• Optimize campaigns and content based on performance data</li>
+                                            <li>• Scale successful initiatives and double down on high-performers</li>
+                                        </ul>
+                                        <div class="text-xs text-purple-600 mt-2 font-medium">Focus: Paid amplification & data-driven optimization</div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button onclick="showTab('recommendations')" class="btn-primary px-6 py-2 rounded hover:bg-gray-800 mr-3">
+                                        View Detailed Implementation Plan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="recommendations-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Strategic Growth Playbook</h1>
+                        <p class="text-xl text-muted">Proven strategies to scale Procurify from 13.9% to 40%+ mention rate in procurement software</p>
+                    </div>
+
+                    <!-- Executive Summary -->
+                    <div class="mb-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-custom border-l-4 border-l-blue-500 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="target" class="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Growth Strategy Overview</h3>
+                                <p class="text-gray-700 mb-4">
+                                    Based on proven playbooks from high-growth B2B companies like Slack, HubSpot, and Atlassian, this comprehensive strategy focuses on 6 core pillars to establish Procurify as a leading mid-market procurement platform.
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                    <div class="bg-white p-3 rounded border">
+                                        <span class="font-bold text-green-600">Current State:</span> 13.9% mention rate, mid-market presence
+                                    </div>
+                                    <div class="bg-white p-3 rounded border">
+                                        <span class="font-bold text-blue-600">12-Month Goal:</span> 40% mention rate, multi-category leadership
+                                    </div>
+                                    <div class="bg-white p-3 rounded border">
+                                        <span class="font-bold text-purple-600">Strategy:</span> Procurement education + Mid-market focus + Implementation ease
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Strategy 1: Educational Cookbooks -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-green-100 rounded-lg">
+                                    <i data-lucide="book-open" class="w-6 h-6 text-green-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">Procurement Cookbooks</h3>
+                                    <p class="text-sm text-green-700 font-medium mb-2">Proven at Cohere • Bottom-funnel conversion focus</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Create comprehensive technical guides showing how to build advanced procurement workflows with Procurify's platform. Transform prospects into power users while dominating search results.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Content Examples:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• "Building Automated Purchase Workflows with Procurify API"</li>
+                                    <li>• "Advanced Spend Analytics: A CFO's Guide"</li>
+                                    <li>• "Integrating Procurify with ERP Systems: Complete Cookbook"</li>
+                                    <li>• "AI-Powered Procurement Optimization"</li>
+                                    <li>• "Custom Approval Workflows for Industry-Specific Needs"</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 2: Procurement Templates -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-blue-100 rounded-lg">
+                                    <i data-lucide="file-text" class="w-6 h-6 text-blue-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">Procurement Template Library</h3>
+                                    <p class="text-sm text-blue-700 font-medium mb-2">Proven at ClickUp • High-volume lead generation</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Create hundreds of free procurement templates that rank for long-tail keywords. Capture leads across the entire procurement funnel, not just software-specific searches.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Template Categories:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Purchase request forms and approval workflows</li>
+                                    <li>• Vendor evaluation scorecards</li>
+                                    <li>• Budget planning and spend tracking sheets</li>
+                                    <li>• Contract templates by procurement category</li>
+                                    <li>• Invoice processing and approval forms</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 3: Thought Leadership -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-purple-100 rounded-lg">
+                                    <i data-lucide="brain" class="w-6 h-6 text-purple-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">Procurement × AI Authority</h3>
+                                    <p class="text-sm text-purple-700 font-medium mb-2">Proven at Lemonstand/Thinkific • Long-term SEO dominance</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Own the "AI in procurement" conversation through comprehensive pillar content. Target companies still exploring procurement automation for maximum market capture.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Pillar Content Strategy:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• "The Complete Guide to AI Procurement in 2024"</li>
+                                    <li>• "Spend Analytics: AI-Powered Cost optimization"</li>
+                                    <li>• "ROI of Procurement Automation: 50 Company Case Studies"</li>
+                                    <li>• "Future of Procurement: AI-Human Spend Management"</li>
+                                    <li>• "Compliance & Risk: AI Procurement Best Practices"</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 4: Competitor Campaigns -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-orange-100 rounded-lg">
+                                    <i data-lucide="zap" class="w-6 h-6 text-orange-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">Competitive Capture</h3>
+                                    <p class="text-sm text-orange-700 font-medium mb-2">Proven at Procurify/Typeform • Direct conversion focus</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Intercept prospects researching competitors through comparison pages and targeted SEM campaigns. Low competition = high ROI opportunity.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Target Competitors:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• SAP Ariba alternative (80.6% mention rate leader)</li>
+                                    <li>• Coupa vs Procurify (63.9% procurement competitor)</li>
+                                    <li>• Ivalua alternative (58.3% mention rate)</li>
+                                    <li>• Zycus comparison (55.6% mention rate)</li>
+                                    <li>• Oracle Procurement Cloud alternative (50.0%)</li>
+                                    <li>• GEP vs Procurify (50.0% mention rate)</li>
+                                    <li>• Basware alternative (47.2% mention rate)</li>
+                                    <li>• Jaggaer comparison (38.9% mention rate)</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 5: Free Tools -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-teal-100 rounded-lg">
+                                    <i data-lucide="wrench" class="w-6 h-6 text-teal-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">Lead Gen Tools</h3>
+                                    <p class="text-sm text-teal-700 font-medium mb-2">Proven at Gorgias • High-value lead capture</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Create valuable free tools that solve immediate procurement pain points. Capture high-intent leads while showcasing Procurify's platform capabilities.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Tool Portfolio:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Spend Analysis Calculator (budget optimization)</li>
+                                    <li>• Vendor Evaluation Scorecard Generator</li>
+                                    <li>• Purchase Request Template Builder</li>
+                                    <li>• Contract Compliance Checklist Tool</li>
+                                    <li>• Procurement ROI Calculator</li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <!-- Strategy 6: Community Building -->
+                        <div class="bg-white border border-custom rounded-lg p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="p-3 bg-red-100 rounded-lg">
+                                    <i data-lucide="users" class="w-6 h-6 text-red-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-custom mb-2">Procurement Automation Community</h3>
+                                    <p class="text-sm text-red-700 font-medium mb-2">New opportunity • First-mover advantage</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Build the premier community for procurement practitioners. Create network effects and establish Procurify as the category-defining platform.
+                            </p>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-custom mb-2">Community Strategy:</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Monthly "Procurement Automation Roundtable" virtual events</li>
+                                    <li>• Slack/Discord community for practitioners</li>
+                                    <li>• Annual "Future of Procurement Automation" conference</li>
+                                    <li>• Customer success story spotlights</li>
+                                    <li>• Partnership with procurement organizations and universities</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Implementation Timeline -->
                     <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
-                        <h2 class="text-xl font-bold text-custom mb-6">6-Month Performance Projections</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div class="text-center">
-                                <h3 class="text-sm font-medium text-muted mb-2">AI Mention Rate</h3>
-                                <div class="space-y-1">
-                                    <div class="text-xs text-muted">Current</div>
-                                    <div class="text-lg font-bold text-custom">31%</div>
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
-                                    <div class="text-lg font-bold text-green-600">65%</div>
-                                    <div class="text-xs text-muted">Target</div>
-                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+110%</span>
-                                </div>
+                        <h2 class="text-xl font-bold text-custom mb-6">90-Day Implementation Roadmap</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                                <h3 class="text-lg font-bold text-custom mb-4 flex items-center gap-2">
+                                    <i data-lucide="calendar" class="w-5 h-5 text-green-600"></i>
+                                    Month 1: Foundation
+                                </h3>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                        Launch procurement template library (50 templates)
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                        Start competitor comparison pages
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                        Begin first procurement automation cookbook
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                        Launch SEM campaigns (low competition)
+                                    </li>
+                                </ul>
                             </div>
 
-                            <div class="text-center">
-                                <h3 class="text-sm font-medium text-muted mb-2">Average Rank</h3>
-                                <div class="space-y-1">
-                                    <div class="text-xs text-muted">Current</div>
-                                    <div class="text-lg font-bold text-custom">8.0</div>
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
-                                    <div class="text-lg font-bold text-green-600">4.5</div>
-                                    <div class="text-xs text-muted">Target</div>
-                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+44%</span>
-                                </div>
+                            <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                <h3 class="text-lg font-bold text-custom mb-4 flex items-center gap-2">
+                                    <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
+                                    Month 2: Acceleration
+                                </h3>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                                        Publish first major pillar content
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                                        Launch first free tool
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                                        Expand template library to 150 templates
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="trending-up" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                                        Start community building initiatives
+                                    </li>
+                                </ul>
                             </div>
 
-                            <div class="text-center">
-                                <h3 class="text-sm font-medium text-muted mb-2">Share of Voice</h3>
-                                <div class="space-y-1">
-                                    <div class="text-xs text-muted">Current</div>
-                                    <div class="text-lg font-bold text-custom">3.8%</div>
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
-                                    <div class="text-lg font-bold text-green-600">8.2%</div>
-                                    <div class="text-xs text-muted">Target</div>
-                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+116%</span>
-                                </div>
-                            </div>
-
-                            <div class="text-center">
-                                <h3 class="text-sm font-medium text-muted mb-2">Category Coverage</h3>
-                                <div class="space-y-1">
-                                    <div class="text-xs text-muted">Current</div>
-                                    <div class="text-lg font-bold text-custom">5/11</div>
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
-                                    <div class="text-lg font-bold text-green-600">9/11</div>
-                                    <div class="text-xs text-muted">Target</div>
-                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+80%</span>
-                                </div>
-                            </div>
-
-                            <div class="text-center">
-                                <h3 class="text-sm font-medium text-muted mb-2">Citation Authority</h3>
-                                <div class="space-y-1">
-                                    <div class="text-xs text-muted">Current</div>
-                                    <div class="text-lg font-bold text-custom">Low</div>
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
-                                    <div class="text-lg font-bold text-green-600">Medium</div>
-                                    <div class="text-xs text-muted">Target</div>
-                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Qualitative</span>
-                                </div>
-                            </div>
-
-                            <div class="text-center">
-                                <h3 class="text-sm font-medium text-muted mb-2">Competitor Gap</h3>
-                                <div class="space-y-1">
-                                    <div class="text-xs text-muted">Current</div>
-                                    <div class="text-lg font-bold text-custom">-18.5%</div>
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
-                                    <div class="text-lg font-bold text-green-600">-8%</div>
-                                    <div class="text-xs text-muted">Target</div>
-                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+57%</span>
-                                </div>
+                            <div class="bg-purple-50 p-6 rounded-lg border border-purple-200">
+                                <h3 class="text-lg font-bold text-custom mb-4 flex items-center gap-2">
+                                    <i data-lucide="calendar" class="w-5 h-5 text-purple-600"></i>
+                                    Month 3: Optimization
+                                </h3>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="target" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+                                        Complete cookbook series (5 guides)
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="target" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+                                        Launch 2 additional free tools
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="target" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+                                        Optimize campaigns based on data
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="target" class="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0"></i>
+                                        Scale community to 500+ members
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
 
                 </div>
             </div>
+
 
         </div>
     </div>
