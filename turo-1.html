@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turo GEO Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .bg-custom { background-color: #f8f4f0; }
+        .text-custom { color: #2f2f2f; }
+        .text-muted { color: #6c6e76; }
+        .border-custom { border-color: #e0cbb5; }
+        .bg-yellow-custom { background-color: #dfe34e; }
+        .bg-green-custom { background-color: #b1dbc3; }
+        .bg-beige-custom { background-color: #e2dbcd; }
+        .bg-purple-custom { background-color: #daa6de; }
+        .bg-blue-custom { background-color: #a1c5ff; }
+        
+        /* Fix button contrast */
+        .btn-primary { background-color: #2f2f2f; color: white; }
+        .btn-primary:hover { background-color: #1a1a1a; }
+        
+        /* Fix badge contrast */
+        .badge-insight { color: #2f2f2f !important; font-weight: 600; }
+        
+        /* Fix rank badge contrast */
+        .rank-badge { background-color: #2f2f2f !important; color: white !important; }
+        
+        /* Touch-friendly interactions */
+        .touch-friendly {
+            min-height: 44px;
+        }
+        
+        @media (hover: none) and (pointer: coarse) {
+            .hover\:bg-gray-100:hover {
+                background-color: transparent;
+            }
+            .touch-friendly:active {
+                background-color: #f3f4f6;
+            }
+        }
+        
+        /* Mobile responsiveness */
+        .mobile-sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .mobile-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        @media (max-width: 767px) {
+            .sidebar-fixed {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 40;
+            }
+            .main-content-mobile {
+                padding-left: 0;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .mobile-sidebar {
+                transform: translateX(0) !important;
+            }
+            .mobile-overlay {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-custom">
+    <!-- Mobile menu button -->
+    <div class="md:hidden fixed top-4 left-4 z-50">
+        <button id="mobile-menu-btn" class="p-2 bg-white border border-custom rounded-lg shadow-sm">
+            <i data-lucide="menu" class="w-6 h-6 text-custom"></i>
+        </button>
+    </div>
+    
+    <!-- Mobile overlay -->
+    <div id="mobile-overlay" class="mobile-overlay" onclick="closeMobileMenu()"></div>
+    
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-white border-r border-custom p-6 md:relative md:translate-x-0 sidebar-fixed mobile-sidebar">
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-custom">Turo GEO</h2>
+                <p class="text-sm text-muted">Brand Intelligence</p>
+            </div>
+            
+            <nav class="space-y-2">
+                <button onclick="showTab('overview')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 active touch-friendly">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    Overview
+                </button>
+                <button onclick="showTab('competitors')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 touch-friendly">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    Competitors
+                </button>
+                <button onclick="showTab('insights')" class="nav-btn w-full text-left p-3 sm:p-4 rounded-lg hover:bg-gray-100 flex items-center gap-3 touch-friendly">
+                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+                    Insights
+                </button>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto main-content-mobile md:ml-0">
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <!-- Header -->
+                    <div class="mb-8">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded">
+                                BRAND PERFORMANCE
+                            </span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-custom mb-2">Performance snapshot</h1>
+                        <p class="text-lg sm:text-xl text-muted">
+                            Tracked across AI search platforms in the car rental category
+                        </p>
+                    </div>
+
+                    <!-- Expert Analysis -->
+                    <div class="mb-8 p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                        <div class="text-gray-700 text-base sm:text-lg leading-relaxed space-y-4">
+                            <p>
+                                <strong>Turo's brand shows up in ≈46% of the 13 high-intent car-rental queries we audited</strong>, but it captures only 4.4% overall share-of-voice (SoV) and averages 4.3 in ranking — good visibility when it appears, yet overshadowed by the traditional majors (Hertz, Enterprise, Avis, Sixt) that each secure double-digit SoV and blanket nearly every sub-category.
+                            </p>
+                            <p>
+                                <strong>Turo dominates two niches</strong> — peer-to-peer car sharing (rank #1) and adventure/overland rentals (rank #1) — but is absent or low-ranked for mainstream, high-volume topics such as airport, family, budget and business rentals.
+                            </p>
+                            <p>
+                                <strong>Only one first-party citation (turo.com) was found across all answers</strong>, which limits brand authority inside ChatGPT answers that pull heavily from third-party sources such as Wikipedia, Forbes and Future Market Insights. <strong>Expanding presence in traditional rental categories requires targeted "Generative Engine Optimisation" (GEO)</strong> to position Turo as a mainstream alternative.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="mb-8">
+                        <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
+                            OVERALL PERFORMANCE
+                        </span>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl sm:text-6xl font-bold text-custom">46.2</span>
+                                        <span class="text-xl sm:text-2xl font-bold text-custom mb-2">%</span>
+                                        <div class="ml-3 mb-2">
+                                            <h3 class="text-lg sm:text-xl font-bold text-custom">Mention Rate</h3>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-gray-400"></i>
+                                </div>
+                                <p class="text-sm italic text-muted">Frequency of brand mentions in AI responses</p>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl sm:text-6xl font-bold text-custom">4.3</span>
+                                        <span class="text-xl sm:text-2xl font-bold text-custom mb-2">/10</span>
+                                        <div class="ml-3 mb-2">
+                                            <h3 class="text-lg sm:text-xl font-bold text-custom">Average Rank</h3>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-gray-400"></i>
+                                </div>
+                                <p class="text-sm italic text-muted">Average position in ranked responses (when mentioned)</p>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 bg-white border border-custom rounded-lg">
+                                <div class="flex items-end justify-between border-b border-custom pb-4 mb-4">
+                                    <div class="flex items-end gap-1">
+                                        <span class="text-4xl sm:text-6xl font-bold text-custom">4.4</span>
+                                        <span class="text-xl sm:text-2xl font-bold text-custom mb-2">%</span>
+                                        <div class="ml-3 mb-2">
+                                            <h3 class="text-lg sm:text-xl font-bold text-custom">Share of Voice</h3>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="trending-up" class="w-6 h-6 text-gray-400"></i>
+                                </div>
+                                <p class="text-sm italic text-muted">Market share compared to competitors</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Competitor Analysis -->
+                    <div class="mb-8 p-4 sm:p-8 bg-white border border-custom rounded-lg">
+                        <div class="space-y-6 overflow-x-auto">
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-orange-200 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(400px, 60vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">47.0%</span>
+                                </div>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">Enterprise Holdings</span>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-beige-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(394px, 60vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">46.2%</span>
+                                </div>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">National Car Rental</span>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-yellow-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(394px, 60vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">46.2%</span>
+                                </div>
+                                <span class="text-sm sm:text-base font-bold text-custom truncate">Turo</span>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-purple-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(328px, 50vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">38.5%</span>
+                                </div>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">Sixt SE</span>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-blue-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(328px, 50vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">38.5%</span>
+                                </div>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">Alamo Rent A Car</span>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-green-custom rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(328px, 50vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">38.5%</span>
+                                </div>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">Thrifty Car Rental</span>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <div class="bg-gray-300 rounded-r-full py-2 sm:py-3 px-4 sm:px-12 flex items-center justify-center flex-shrink-0" style="min-width: 120px; width: min(263px, 40vw);">
+                                    <span class="text-sm sm:text-base font-semibold text-custom">30.8%</span>
+                                </div>
+                                <span class="text-sm sm:text-base font-medium text-muted truncate">Hertz Global Holdings</span>
+                            </div>
+                            <div class="border-t border-dashed border-custom pt-4">
+                                <p class="text-sm italic text-muted text-center">Mention rates (Top 7 car rental brands)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Query Categories -->
+                    <div class="mb-8">
+                        <h2 class="text-xl sm:text-2xl font-bold text-custom mb-4">Query categories</h2>
+                        <p class="text-base sm:text-lg text-gray-700 mb-8">
+                            An analysis of the categories a company like yours could be mentioned within.
+                        </p>
+                        
+                        <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
+                            CATEGORIES MENTIONED
+                        </span>
+                        
+                        <div class="space-y-6 mb-8">
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Peer-to-Peer Car Sharing</h3>
+                                        <div class="flex gap-4 mb-4">
+                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
+                                            <span class="bg-green-custom text-custom text-sm font-semibold px-3 py-1 rounded">Rank 1</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Car sharing platforms connecting vehicle owners with renters for peer-to-peer transactions.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Adventure & Outdoor Vehicle Rentals</h3>
+                                        <div class="flex gap-4 mb-4">
+                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
+                                            <span class="bg-green-custom text-custom text-sm font-semibold px-3 py-1 rounded">Rank 1</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Specialized rentals for adventure vehicles like Jeeps, trucks, and off-road vehicles.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Urban Short-Term Rentals</h3>
+                                        <div class="flex gap-4 mb-4">
+                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
+                                            <span class="bg-green-custom text-custom text-sm font-semibold px-3 py-1 rounded">Rank 4</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Urban car rental solutions for short-term city transportation needs.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Long-Term Monthly Rentals</h3>
+                                        <div class="flex gap-4 mb-4">
+                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
+                                            <span class="bg-green-custom text-custom text-sm font-semibold px-3 py-1 rounded">Rank 5</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Extended car rental options for monthly and long-term vehicle needs.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Electric & Hybrid Vehicle Rentals</h3>
+                                        <div class="flex gap-4 mb-4">
+                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
+                                            <span class="bg-orange-300 text-custom text-sm font-semibold px-3 py-1 rounded">Rank 7</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Eco-friendly car rentals featuring electric and hybrid vehicle options.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Luxury & Exotic Car Rentals</h3>
+                                        <div class="flex gap-4 mb-4">
+                                            <span class="bg-yellow-custom text-custom text-sm font-semibold px-3 py-1 rounded">1 mention</span>
+                                            <span class="bg-orange-300 text-custom text-sm font-semibold px-3 py-1 rounded">Rank 8</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Premium and exotic vehicle rentals for special occasions and experiences.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category Gaps -->
+                        <span class="px-2 py-1 text-xs font-semibold border border-custom text-custom bg-transparent rounded mb-6 inline-block">
+                            CATEGORY GAPS
+                        </span>
+                        
+                        <div class="space-y-6 mb-8">
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">General Car Rental</h3>
+                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Overall car rental market category and general rental solutions.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Airport Car Rentals</h3>
+                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Traditional airport-based car rental services for travelers.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Budget & Economy Car Rentals</h3>
+                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Cost-effective rental options for budget-conscious consumers.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Business & Corporate Rentals</h3>
+                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Corporate car rental programs and business travel solutions.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Family & Large Vehicle Rentals</h3>
+                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">SUVs, minivans, and large vehicles for family travel and group transportation.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Vintage & Classic Car Experiences</h3>
+                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Classic and vintage car rentals for special occasions and experiences.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-start justify-between gap-8">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-custom mb-4 max-w-sm">Pet-Friendly Vehicle Rentals</h3>
+                                        <span class="bg-gray-300 text-custom text-sm font-semibold px-3 py-1 rounded mb-4 inline-block">0 mentions</span>
+                                    </div>
+                                    <div class="flex-1 max-w-md">
+                                        <p class="text-sm sm:text-base text-gray-700">Specialized rentals that accommodate pets and pet-friendly travel.</p>
+                                    </div>
+                                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-800"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Items -->
+                    <div class="p-4 sm:p-6 bg-white border border-custom border-l-4 border-l-orange-400 rounded-lg">
+                        <div class="flex items-start gap-3 sm:gap-4">
+                            <i data-lucide="alert-circle" class="w-5 h-5 sm:w-6 sm:h-6 text-orange-400 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-bold text-custom mb-2">Immediate Action Required</h3>
+                                <p class="text-sm sm:text-base text-gray-700 mb-4">
+                                    Your brand is missing from mainstream car rental categories with 54% of queries showing zero mentions. Focus on creating content that positions Turo as a viable alternative in Airport Rentals, Budget Rentals, Business Rentals, and Family Vehicle categories.
+                                </p>
+                                <button class="btn-primary px-3 sm:px-4 py-2 rounded hover:bg-gray-800 text-sm sm:text-base">
+                                    View Optimization Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitors Tab -->
+            <div id="competitors-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Competitor Intelligence</h1>
+                        <p class="text-xl text-muted">Strategic analysis of how car rental competitors perform across AI platforms</p>
+                    </div>
+
+                    <!-- Executive Summary -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-4">Executive Summary</h2>
+                        <div class="text-gray-700 text-base leading-relaxed space-y-4">
+                            <p>
+                                <strong>Your competitive landscape is dominated by traditional rental giants</strong> who collectively control ~70% of AI conversation share. Enterprise Holdings leads with superior brand recognition and network coverage, while Hertz and Avis maintain strong corporate presence.
+                            </p>
+                            <p>
+                                <strong>Key opportunity:</strong> Traditional players struggle with peer-to-peer and adventure rental queries, where Turo ranks #1. The shift toward sharing economy models presents significant growth potential.
+                            </p>
+                            <p>
+                                <strong>Recommended strategy:</strong> Leverage P2P leadership to expand into adjacent categories like urban rentals and electric vehicles, while building content around cost-effective alternatives to traditional rentals.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Top Competitors Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Enterprise Holdings -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-custom">EH</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Enterprise Holdings</h3>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">High Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">40%</div>
+                                    <div class="text-xs text-muted">Share of Voice</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">47%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">1.0</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Strong Categories</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Airport Rentals</span>
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Business Travel</span>
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Corporate Programs</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Categories</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">P2P Sharing</span>
+                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Adventure Vehicles</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-muted">AI Presence: <strong>Dominant</strong></span>
+                                <button class="border border-custom px-3 py-2 rounded text-sm hover:bg-gray-50 flex items-center gap-2 text-custom touch-friendly">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                    Analyze
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hertz -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-custom">HZ</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Hertz Global</h3>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">High Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">36%</div>
+                                    <div class="text-xs text-muted">Share of Voice</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">31%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">1.8</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Strong Categories</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Premium Fleet</span>
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Global Presence</span>
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Luxury Vehicles</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Categories</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Cost Efficiency</span>
+                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">P2P Model</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-muted">AI Presence: <strong>Strong</strong></span>
+                                <button class="border border-custom px-3 py-2 rounded text-sm hover:bg-gray-50 flex items-center gap-2 text-custom touch-friendly">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                    Analyze
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- National Car Rental -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-custom">NC</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">National Car Rental</h3>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">15%</div>
+                                    <div class="text-xs text-muted">Share of Voice</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">46%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">5.5</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Strong Categories</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Business Travel</span>
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Customer Service</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Categories</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Cost Competition</span>
+                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Tech Innovation</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-muted">AI Presence: <strong>Growing</strong></span>
+                                <button class="border border-custom px-3 py-2 rounded text-sm hover:bg-gray-50 flex items-center gap-2 text-custom touch-friendly">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                    Analyze
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Avis Budget Group -->
+                        <div class="p-6 bg-white border border-custom rounded-lg">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-custom">AB</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-custom">Avis Budget Group</h3>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Medium Threat</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">20%</div>
+                                    <div class="text-xs text-muted">Share of Voice</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">23%</div>
+                                    <div class="text-xs text-muted">Mention Rate</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-custom">3.0</div>
+                                    <div class="text-xs text-muted">Avg Rank</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Strong Categories</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Budget Rentals</span>
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Car Sharing (Zipcar)</span>
+                                    <span class="bg-green-custom text-custom text-xs px-2 py-1 rounded">Value Pricing</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-custom mb-2">Vulnerable Categories</h4>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Peer-to-Peer</span>
+                                    <span class="bg-gray-300 text-custom text-xs px-2 py-1 rounded">Unique Vehicles</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-muted">AI Presence: <strong>Moderate</strong></span>
+                                <button class="border border-custom px-3 py-2 rounded text-sm hover:bg-gray-50 flex items-center gap-2 text-custom touch-friendly">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                    Analyze
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Battleground Analysis -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">Category Battleground Analysis</h2>
+                        <div class="space-y-6">
+                            <!-- Categories where Turo appears -->
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Peer-to-Peer Car Sharing</h3>
+                                    <span class="bg-green-custom text-custom px-2 py-1 rounded text-sm">We rank #1</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="flex gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-custom">Turo</span>
+                                            <span class="rank-badge text-xs px-2 py-1 rounded">#1</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-muted">Leading the peer-to-peer market</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Adventure & Outdoor Vehicle Rentals</h3>
+                                    <span class="bg-green-custom text-custom px-2 py-1 rounded text-sm">We rank #1</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="flex gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-custom">Turo</span>
+                                            <span class="rank-badge text-xs px-2 py-1 rounded">#1</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-muted">Dominating adventure vehicle rentals</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Urban Short-Term Rentals</h3>
+                                    <span class="bg-yellow-custom text-custom px-2 py-1 rounded text-sm">We rank #4</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="flex gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-muted">Top competitors rank 1-3</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-custom">Turo</span>
+                                            <span class="rank-badge text-xs px-2 py-1 rounded">#4</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Long-Term Monthly Rentals</h3>
+                                    <span class="bg-yellow-custom text-custom px-2 py-1 rounded text-sm">We rank #5</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="target" class="w-4 h-4 text-muted"></i>
+                                    <div class="flex gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-muted">Top competitors rank 1-4</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-bold text-custom">Turo</span>
+                                            <span class="rank-badge text-xs px-2 py-1 rounded">#5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Major gaps -->
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Airport Car Rentals</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Not mentioned</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="flex gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-muted">Enterprise, Hertz, and traditional players dominate this major category</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-b border-custom pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Business & Corporate Rentals</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Not mentioned</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="flex gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-muted">Enterprise and National lead corporate programs, significant B2B opportunity</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-custom">Budget & Economy Rentals</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Not mentioned</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500"></i>
+                                    <div class="flex gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-muted">Budget, Thrifty, and economy brands capture price-conscious consumers</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategic Recommendations -->
+                    <div class="p-6 bg-white border border-custom border-l-4 border-l-blue-400 rounded-lg">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="award" class="w-6 h-6 text-blue-400 flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-custom mb-2">Strategic Opportunities</h3>
+                                <div class="space-y-2 text-gray-700">
+                                    <p>• <strong>Leverage P2P dominance:</strong> Create content positioning peer-to-peer as the future of car rentals to influence adjacent categories</p>
+                                    <p>• <strong>Target cost-conscious travelers:</strong> Build authority in budget rental conversations by highlighting P2P savings vs traditional players</p>
+                                    <p>• <strong>Capture business travelers:</strong> Develop corporate programs and content to compete with Enterprise's business dominance</p>
+                                    <p>• <strong>Electric vehicle leadership:</strong> Position Turo as the go-to platform for EV rentals while traditional players lag</p>
+                                </div>
+                                <button class="btn-primary px-4 py-2 rounded hover:bg-gray-800 mt-4">
+                                    Generate Battle Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights Tab -->
+            <div id="insights-tab" class="tab-content hidden">
+                <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-custom mb-2">Expert Insights & Reports</h1>
+                        <p class="text-xl text-muted">AI-powered recommendations from our car rental marketing experts</p>
+                    </div>
+
+                    <!-- Executive Brief -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <div class="flex items-start gap-4 mb-4">
+                            <i data-lucide="file-text" class="w-6 h-6 text-custom flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h2 class="text-xl font-bold text-custom mb-2">Executive Brief: Turo GEO Analysis Q1 2025</h2>
+                                <span class="bg-yellow-custom text-custom px-2 py-1 rounded text-sm mb-4 inline-block">Generated Today</span>
+                            </div>
+                        </div>
+                        
+                        <div class="text-gray-700 text-base leading-relaxed mb-6 space-y-4">
+                            <p>
+                                <strong>Bottom Line:</strong> Turo's GEO performance shows strong positioning in niche categories but significant gaps in mainstream car rental conversations. Your peer-to-peer dominance creates unique opportunities to disrupt traditional rental narratives.
+                            </p>
+                            <p>
+                                <strong>Key Challenge:</strong> AI models heavily favor traditional rental companies in general queries, with Enterprise and Hertz dominating 70% of mainstream car rental conversations where Turo has minimal presence.
+                            </p>
+                            <p>
+                                <strong>Immediate Action Required:</strong> Leverage P2P leadership to build authority in adjacent categories like urban rentals and budget alternatives. Conservative estimates suggest 85% improvement in mention rates within 6 months by positioning peer-to-peer as the future of car rentals.
+                            </p>
+                        </div>
+
+                        <button class="btn-primary px-4 py-3 rounded hover:bg-gray-800 flex items-center gap-2 touch-friendly">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            Download Full Report
+                        </button>
+                    </div>
+
+                    <!-- Strategic Insights -->
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-custom mb-6">Strategic Insights</h2>
+                        <div class="grid grid-cols-1 gap-6">
+                            <!-- Critical Insight -->
+                            <div class="p-6 bg-white border-2 border-red-200 rounded-lg">
+                                <div class="flex items-start gap-4 mb-4">
+                                    <div class="p-2 rounded-lg bg-red-50">
+                                        <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm border-0">Critical</span>
+                                            <span class="bg-gray-600 text-white text-xs px-2 py-1 rounded">High Impact</span>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-custom mb-2">Traditional Rental Bias</h3>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-700 mb-4 leading-relaxed">AI models heavily favor traditional rental companies in general car rental queries. Forbes, Consumer Reports, and travel publications dominate 70% of citations but rarely highlight peer-to-peer alternatives.</p>
+                                
+                                <div class="bg-gray-800 rounded-lg p-3">
+                                    <h4 class="text-sm font-bold text-white mb-1">Recommended Action</h4>
+                                    <p class="text-sm text-gray-100">Target automotive and travel publications with P2P vs traditional comparison content</p>
+                                </div>
+                            </div>
+
+                            <!-- Opportunity Insight -->
+                            <div class="p-6 bg-white border-2 border-yellow-200 rounded-lg">
+                                <div class="flex items-start gap-4 mb-4">
+                                    <div class="p-2 rounded-lg bg-yellow-50">
+                                        <i data-lucide="lightbulb" class="w-5 h-5 text-yellow-500"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-yellow-500 text-white px-2 py-1 rounded text-sm border-0">Opportunity</span>
+                                            <span class="bg-gray-600 text-white text-xs px-2 py-1 rounded">Medium Impact</span>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-custom mb-2">Sharing Economy Momentum</h3>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-700 mb-4 leading-relaxed">Consumer preference for sharing economy models is growing 25% YoY, but traditional rental companies struggle to adapt. This creates opportunities to capture mindshare in cost-conscious and experience-focused segments.</p>
+                                
+                                <div class="bg-gray-800 rounded-lg p-3">
+                                    <h4 class="text-sm font-bold text-white mb-1">Recommended Action</h4>
+                                    <p class="text-sm text-gray-100">Create content positioning P2P as the evolution of car rentals</p>
+                                </div>
+                            </div>
+
+                            <!-- Strategic Insight -->
+                            <div class="p-6 bg-white border-2 border-blue-200 rounded-lg">
+                                <div class="flex items-start gap-4 mb-4">
+                                    <div class="p-2 rounded-lg bg-blue-50">
+                                        <i data-lucide="target" class="w-5 h-5 text-blue-500"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm border-0">Strategic</span>
+                                            <span class="bg-gray-600 text-white text-xs px-2 py-1 rounded">High Impact</span>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-custom mb-2">Adventure Rental Leadership</h3>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-700 mb-4 leading-relaxed">You rank #1 in adventure vehicle rentals but this strength isn't leveraged across outdoor and experience categories. Adventure travel is growing 40% YoY in search queries.</p>
+                                
+                                <div class="bg-gray-800 rounded-lg p-3">
+                                    <h4 class="text-sm font-bold text-white mb-1">Recommended Action</h4>
+                                    <p class="text-sm text-gray-100">Amplify adventure and unique vehicle messaging across travel categories</p>
+                                </div>
+                            </div>
+
+                            <!-- Success Insight -->
+                            <div class="p-6 bg-white border-2 border-green-200 rounded-lg">
+                                <div class="flex items-start gap-4 mb-4">
+                                    <div class="p-2 rounded-lg bg-green-50">
+                                        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-green-500 text-white px-2 py-1 rounded text-sm border-0">Success</span>
+                                            <span class="bg-gray-600 text-white text-xs px-2 py-1 rounded">Medium Impact</span>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-custom mb-2">Urban Mobility Positioning</h3>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-700 mb-4 leading-relaxed">Your #4 ranking in urban short-term rentals positions you well in the growing urban mobility market. This category has 35% higher engagement than traditional airport rentals.</p>
+                                
+                                <div class="bg-gray-800 rounded-lg p-3">
+                                    <h4 class="text-sm font-bold text-white mb-1">Recommended Action</h4>
+                                    <p class="text-sm text-gray-100">Position Turo as the urban mobility solution vs traditional rentals</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 90-Day Action Plan -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">90-Day Action Plan</h2>
+                        <div class="space-y-6">
+                            <div class="border-l-4 border-custom pl-6">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <h3 class="text-lg font-bold text-custom">Phase 1: Foundation (Weeks 1-4)</h3>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Critical Priority</span>
+                                </div>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Audit current content against car rental AI citation sources</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Identify and contact top 5 automotive and travel publications</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Create editorial calendar for P2P vs traditional rental content</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Establish car rental AI query monitoring dashboard</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="border-l-4 border-custom pl-6">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <h3 class="text-lg font-bold text-custom">Phase 2: Content Offensive (Weeks 5-12)</h3>
+                                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">High Priority</span>
+                                </div>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Publish 3x weekly car rental insights targeting mainstream categories</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Launch 'Future of Car Sharing' editorial series</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Create comparison guides for P2P vs traditional rental positioning</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Develop adventure and unique vehicle case studies</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="border-l-4 border-custom pl-6">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <h3 class="text-lg font-bold text-custom">Phase 3: Authority Building (Weeks 13-24)</h3>
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Medium Priority</span>
+                                </div>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Establish speaker bureau for travel and mobility conferences</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Launch car sharing insights podcast/webinar series</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Create rental cost comparison tools and trip calculators</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"></i>
+                                        <span class="text-gray-700">Build strategic partnerships with travel and hospitality platforms</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Projections -->
+                    <div class="mb-8 p-6 bg-white border border-custom rounded-lg">
+                        <h2 class="text-xl font-bold text-custom mb-6">6-Month Performance Projections</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <h3 class="text-sm font-medium text-muted mb-2">AI Mention Rate</h3>
+                                <div class="space-y-1">
+                                    <div class="text-xs text-muted">Current</div>
+                                    <div class="text-lg font-bold text-custom">46%</div>
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
+                                    <div class="text-lg font-bold text-green-600">75%</div>
+                                    <div class="text-xs text-muted">Target</div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+63%</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <h3 class="text-sm font-medium text-muted mb-2">Average Rank</h3>
+                                <div class="space-y-1">
+                                    <div class="text-xs text-muted">Current</div>
+                                    <div class="text-lg font-bold text-custom">4.3</div>
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
+                                    <div class="text-lg font-bold text-green-600">2.8</div>
+                                    <div class="text-xs text-muted">Target</div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+35%</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <h3 class="text-sm font-medium text-muted mb-2">Share of Voice</h3>
+                                <div class="space-y-1">
+                                    <div class="text-xs text-muted">Current</div>
+                                    <div class="text-lg font-bold text-custom">4.4%</div>
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
+                                    <div class="text-lg font-bold text-green-600">9.5%</div>
+                                    <div class="text-xs text-muted">Target</div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+116%</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <h3 class="text-sm font-medium text-muted mb-2">Category Coverage</h3>
+                                <div class="space-y-1">
+                                    <div class="text-xs text-muted">Current</div>
+                                    <div class="text-lg font-bold text-custom">6/13</div>
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
+                                    <div class="text-lg font-bold text-green-600">10/13</div>
+                                    <div class="text-xs text-muted">Target</div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+67%</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <h3 class="text-sm font-medium text-muted mb-2">Citation Authority</h3>
+                                <div class="space-y-1">
+                                    <div class="text-xs text-muted">Current</div>
+                                    <div class="text-lg font-bold text-custom">Low</div>
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
+                                    <div class="text-lg font-bold text-green-600">Medium</div>
+                                    <div class="text-xs text-muted">Target</div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Qualitative</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <h3 class="text-sm font-medium text-muted mb-2">Competitor Gap</h3>
+                                <div class="space-y-1">
+                                    <div class="text-xs text-muted">Current</div>
+                                    <div class="text-lg font-bold text-custom">-42%</div>
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500 mx-auto"></i>
+                                    <div class="text-lg font-bold text-green-600">-25%</div>
+                                    <div class="text-xs text-muted">Target</div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">+40%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+        
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-gray-100');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active', 'bg-gray-100');
+            
+            // Close mobile menu after tab selection
+            if (window.innerWidth < 768) {
+                closeMobileMenu();
+            }
+            
+            // Re-initialize icons for newly shown content
+            lucide.createIcons();
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // Mobile menu button event listener
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+        });
+    </script>
+</body>
+</html>
