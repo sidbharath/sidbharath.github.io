@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deeksha AI Automation Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #f8f9fa;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.15em;
+            color: #718096;
+            font-weight: 400;
+        }
+
+        .legend {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .legend-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a202c;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .legend-item span:last-child {
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #667eea;
+            color: white;
+            padding: 24px 28px;
+            font-size: 1.5em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .section-header:hover {
+            background: #5568d3;
+        }
+
+        .toggle-icon {
+            font-size: 0.9em;
+            transition: transform 0.3s ease;
+        }
+
+        .section-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            padding: 0;
+            max-height: 10000px;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .section-content.collapsed {
+            max-height: 0;
+        }
+
+        .item {
+            margin: 24px;
+            padding: 28px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .item-title {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 10px;
+        }
+
+        .item-description {
+            color: #718096;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .solution {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-top: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .solution-label {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 16px;
+            font-size: 1.05em;
+        }
+
+        .solution-type {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 12px;
+        }
+
+        .type-level1 {
+            background: #48bb78;
+            color: white;
+        }
+
+        .type-level2 {
+            background: #ed8936;
+            color: white;
+        }
+
+        .type-level3 {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .solution-details {
+            color: #2d3748;
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+
+        .solution-details strong {
+            color: #1a202c;
+            font-weight: 600;
+        }
+
+        .solution-details ul {
+            margin-top: 12px;
+            margin-left: 24px;
+        }
+
+        .solution-details li {
+            margin: 8px 0;
+        }
+
+        .solution-details p {
+            margin-top: 16px;
+            padding: 14px;
+            background: #edf2f7;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .tool-tag {
+            background: #667eea;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .section-header {
+                font-size: 1.2em;
+                padding: 20px;
+            }
+
+            .item {
+                margin: 16px;
+                padding: 20px;
+            }
+
+            .legend-items {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Deeksha AI Automation Solutions</h1>
+        </header>
+
+        <div class="legend">
+            <div class="legend-title">AI Automation Levels</div>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <span class="solution-type type-level1">Level 1: Automation</span>
+                    <span>Repeatable rules, triggers, pipelines, notifications. Use existing tools, Zapier, or ChatGPT.</span>
+                </div>
+                <div class="legend-item">
+                    <span class="solution-type type-level2">Level 2: Intelligence</span>
+                    <span>AI interpretation, judgment, recommendations. Python scripts, chaining APIs, OpenAI API.</span>
+                </div>
+                <div class="legend-item">
+                    <span class="solution-type type-level3">Level 3: Innovation</span>
+                    <span>Entirely new capabilities, training models, automated systems beyond existing solutions.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMISSIONS SECTION -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>Admissions</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+
+                <div class="item">
+                    <div class="item-title">1. Lead Engagement, Scoring and Prioritization</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Engage with prospective admissions through SMS and WhatsApp by sharing curated and personalized content</li>
+                            <li>Interact by phone with the engaged short listed leads</li>
+                            <li>Based on disposition during the conversation, label these leads and pass on to admission team for closure</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level1">Level 1: Automation</span>
+                        <div class="solution-details">
+                            <strong>Use a CRM with built-in lead scoring:</strong>
+                            <ul>
+                                <li><strong>HubSpot CRM</strong> (Free tier available) - Built-in lead scoring, WhatsApp integration via Twilio, automated workflows</li>
+                                <li><strong>Freshsales</strong> - Indian market focused, WhatsApp Business API integration, AI-based lead scoring</li>
+                                <li><strong>LeadSquared</strong> - Specifically designed for education sector in India, has SMS/WhatsApp automation</li>
+                            </ul>
+                            <p>Connect existing enquiry forms → Auto-score based on rules (location, exam preference, engagement) → Trigger SMS/WhatsApp sequences → Flag high-intent leads for phone calls</p>
+                            <div class="tools-list">
+                                <span class="tool-tag">LeadSquared</span>
+                                <span class="tool-tag">WhatsApp Business API</span>
+                                <span class="tool-tag">Twilio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">2. Content Creation</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Identification of upcoming trends in the industry</li>
+                            <li>Plan for the action on the trends</li>
+                            <li>Creation of various:
+                                <ul>
+                                    <li>Videos</li>
+                                    <li>Blogs</li>
+                                    <li>Reels</li>
+                                    <li>Landing pages</li>
+                                    <li>Ads (Videos and posts)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Trend Identification:</strong>
+                            <ul>
+                                <li>Use <strong>ChatGPT with web browsing</strong> or <strong>Perplexity AI</strong> - Daily prompts like "What are trending topics in JEE/NEET preparation for [current month]?"</li>
+                                <li>Set up <strong>Google Alerts</strong> for keywords: "JEE 2025", "NEET preparation", "NTA updates"</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Content Creation:</strong>
+                            <ul>
+                                <li><strong>Blogs:</strong> ChatGPT with custom GPT trained on Deeksha's voice/style → Edit in Notion/Google Docs</li>
+                                <li><strong>Videos:</strong> Script with ChatGPT → Record → Edit with Descript (AI-powered editing)</li>
+                                <li><strong>Reels:</strong> Opus Clip (converts long videos to short clips automatically) or Vizard.ai</li>
+                                <li><strong>Landing Pages:</strong> Use Carrd.co or Unbounce with AI copywriting from ChatGPT</li>
+                                <li><strong>Ads:</strong> Copy from ChatGPT → Visuals from Canva (Magic Design AI feature)</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">ChatGPT Plus</span>
+                                <span class="tool-tag">Perplexity AI</span>
+                                <span class="tool-tag">Descript</span>
+                                <span class="tool-tag">Opus Clip</span>
+                                <span class="tool-tag">Canva</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">3. Google Page Reviews</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Monitor all our campus Google Pages</li>
+                            <li>Read the reviews and respond appropriately to each of the reviews</li>
+                            <li>Prepare an executive summary of actionables, based on the analysis of the reviews</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Setup:</strong>
+                            <ul>
+                                <li><strong>Step 1:</strong> Use Zapier/Make.com to monitor Google My Business reviews (trigger on new review)</li>
+                                <li><strong>Step 2:</strong> Send review to ChatGPT API with prompt: "Generate a professional, empathetic response to this review: [review text]"</li>
+                                <li><strong>Step 3:</strong> Post response automatically OR send to Slack for approval before posting</li>
+                                <li><strong>Step 4:</strong> Log all reviews to Google Sheets with sentiment analysis</li>
+                                <li><strong>Step 5:</strong> Weekly, send all reviews to ChatGPT: "Summarize these reviews and provide actionable insights for campus improvements"</li>
+                            </ul>
+                            <p><strong>Alternative:</strong> <strong>BirdEye</strong> or <strong>Podium</strong> - These platforms do this out-of-the-box with AI response generation</p>
+                            <div class="tools-list">
+                                <span class="tool-tag">Zapier</span>
+                                <span class="tool-tag">ChatGPT API</span>
+                                <span class="tool-tag">Google Sheets</span>
+                                <span class="tool-tag">BirdEye</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">4. Sales Insight & Forecast</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Analyze the sales pitch of each caller to share actionable insights</li>
+                            <li>Provide industry standard methods to improve and calibrate the work</li>
+                            <li>Help with the forecast of the appointments expected</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Call Recording & Analysis:</strong>
+                            <ul>
+                                <li>Use <strong>Gong.io</strong> or <strong>Chorus.ai</strong> (expensive) OR <strong>Fireflies.ai</strong> (affordable)</li>
+                                <li>Automatically transcribes calls, identifies talk-time ratio, keywords, objections, sentiment</li>
+                                <li>AI generates coaching insights per caller</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Budget Option:</strong>
+                            <ul>
+                                <li>Record calls → Transcribe with <strong>Whisper API</strong> (OpenAI)</li>
+                                <li>Send transcripts to ChatGPT with prompt: "Analyze this sales call and provide: 1) What went well 2) Areas for improvement 3) Objection handling 4) Next steps"</li>
+                                <li>Store in database, track patterns over time</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Forecasting:</strong>
+                            <ul>
+                                <li>Simple pipeline tracking in Google Sheets/Airtable</li>
+                                <li>Use historical conversion rates by stage</li>
+                                <li>Weekly ChatGPT analysis: "Based on this pipeline data, forecast appointments for next week"</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Fireflies.ai</span>
+                                <span class="tool-tag">Whisper API</span>
+                                <span class="tool-tag">ChatGPT API</span>
+                                <span class="tool-tag">Airtable</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">5. Coaching of Sales Team</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Analyze the on-ground sales team expertise</li>
+                            <li>Do TNA and help with improvement plans</li>
+                            <li>Create a system of daily individualized suggestions to be sent</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Daily Coaching System:</strong>
+                            <ul>
+                                <li><strong>Step 1:</strong> Collect daily metrics (calls made, conversions, objections faced) in Google Forms/Sheets</li>
+                                <li><strong>Step 2:</strong> End of day, Zapier triggers Python script that sends each person's data to ChatGPT</li>
+                                <li><strong>Step 3:</strong> Prompt: "This salesperson made 20 calls, 2 conversions, common objection was 'too expensive'. Generate 3 specific, actionable tips for tomorrow."</li>
+                                <li><strong>Step 4:</strong> Auto-send personalized email/WhatsApp message to each team member</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Training Needs Analysis:</strong>
+                            <ul>
+                                <li>Monthly: Export all performance data → Send to ChatGPT with prompt: "Analyze this sales team performance data and identify: 1) Top performers and why 2) Struggling team members and gaps 3) Training module recommendations"</li>
+                                <li>Create training content using ChatGPT + video recordings</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Google Sheets</span>
+                                <span class="tool-tag">Zapier</span>
+                                <span class="tool-tag">ChatGPT API</span>
+                                <span class="tool-tag">Twilio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">6. MIS - Multi-Department Dashboard</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Tie up various departments together</li>
+                            <li>On field, at campus, call center, Digital marketing, offline events, branding events etc to make a meaningful report, which helps to visualize which activity is feeding what other</li>
+                            <li>Log into the various internal platforms, extract information and create a universal dashboard tying various departments and stake holders</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Recommended Solution</div>
+                        <span class="solution-type type-level3">Level 3: Innovation</span>
+                        <div class="solution-details">
+                            <strong>Build a Centralized Data Intelligence Platform:</strong>
+                            <ul>
+                                <li><strong>Data Warehouse Layer:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li>Build central data warehouse using <strong>Snowflake</strong> or <strong>Google BigQuery</strong></li>
+                                        <li>Create ETL pipelines to extract from all sources: CRM, Knowvo LMS, call center logs, marketing platforms, event management systems, finance systems</li>
+                                        <li>Use <strong>Airbyte</strong> (open-source) or <strong>Fivetran</strong> for automated data syncing</li>
+                                        <li>Implement data transformation layer using <strong>dbt (data build tool)</strong> to create unified data models</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Visualization & BI Layer:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li>Use <strong>Metabase</strong> (open-source, free) or <strong>Preset</strong> (Apache Superset) for interactive dashboards</li>
+                                        <li>Create role-based dashboards: Dean view, Campus view, Marketing view, Finance view</li>
+                                        <li>Build attribution models to track "which activity feeds what" across the funnel</li>
+                                    </ul>
+                                </li>
+                                <li><strong>AI-Powered Chat-with-Data Interface:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li>Build natural language query interface using <strong>LangChain + GPT-5</strong></li>
+                                        <li>Users can ask: "Show me lead-to-enrollment conversion by source for last quarter" or "Which campuses have declining fee collection?"</li>
+                                        <li>AI generates SQL queries, creates visualizations on-the-fly, and provides insights</li>
+                                        <li>Use <strong>Text-to-SQL</strong> capabilities with database schema awareness</li>
+                                        <li>Implement caching and query optimization for common questions</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Snowflake/BigQuery</span>
+                                <span class="tool-tag">Airbyte</span>
+                                <span class="tool-tag">dbt</span>
+                                <span class="tool-tag">Metabase</span>
+                                <span class="tool-tag">LangChain</span>
+                                <span class="tool-tag">GPT-5 API</span>
+                                <span class="tool-tag">Streamlit</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- OPERATIONS SECTION -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>Operations</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+
+                <div class="item">
+                    <div class="item-title">1. Fee Collection Automation</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Polite reminder calls to Parents before due date, via Knowvo LMS, Whatsapp and phone call</li>
+                            <li>Daily monitoring of Fee collected vs receipts raised and flagging of discrepancies</li>
+                            <li>Shift gears to push fee collection by making calls immediately after the due date</li>
+                            <li>Make case by case notes on any concerns raised by Parents on Fee payments (requesting more time, etc) and creating an easy to interpret summary</li>
+                            <li>Creating dashboards with actionable insights for Deans and AOs to improve efficiency of fee collection</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level1">Level 1: Automation</span>
+                        <div class="solution-details">
+                            <strong>Automated Reminder System:</strong>
+                            <ul>
+                                <li><strong>Step 1:</strong> Export fee data from Knowvo LMS to Google Sheets daily (via API or manual export)</li>
+                                <li><strong>Step 2:</strong> Use Zapier to:
+                                    <ul style="margin-left: 20px;">
+                                        <li>Check for upcoming due dates (3 days before, 1 day before)</li>
+                                        <li>Send polite reminder via WhatsApp (Twilio/WATI) or SMS</li>
+                                        <li>After due date: Send escalated reminder</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Step 3:</strong> Track responses/concerns in Google Sheets</li>
+                                <li><strong>Step 4:</strong> Daily report to Deans/AOs with pending fees</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Discrepancy Monitoring:</strong>
+                            <ul>
+                                <li>Google Sheets formula: Compare "Fee Collected" column vs "Receipts Raised"</li>
+                                <li>Zapier alerts via Slack/Email if discrepancy > threshold</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Better Option:</strong>
+                            <ul>
+                                <li>Check if Knowvo LMS has built-in automation features</li>
+                                <li>Or use <strong>WATI</strong> (WhatsApp Business API for India) - has templates for payment reminders</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Zapier</span>
+                                <span class="tool-tag">WATI</span>
+                                <span class="tool-tag">Google Sheets</span>
+                                <span class="tool-tag">Twilio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">2. Training and Improvement</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Have eyeballs in every classroom to extract real time feedback on teaching based on certain parameters</li>
+                            <li>Create easy to interpret dashboards flagging any concerns with any teachers across the system, based on each and every session</li>
+                            <li>Provide actionable insights to help teachers improve</li>
+                            <li>Provide insights for teachers to understand their strengths and weaknesses</li>
+                            <li>Monitor the behaviour of Deekshiates (teaching and non teaching staff) during different situations (like while interacting with parents, interacting with fellow Deekshaites, using equipment, etc.,) and providing feedback/suggestions for improvement</li>
+                            <li>Conduct assessments at the time of interviews (Myer Briggs/Big 5) and create customised training modules</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Classroom Monitoring (Manual Approach):</strong>
+                            <ul>
+                                <li>Create Google Form with evaluation parameters (engagement, clarity, pace, etc.)</li>
+                                <li>Students submit feedback after each class via QR code</li>
+                                <li>Responses flow to Google Sheets → Looker Studio dashboard per teacher</li>
+                                <li>Weekly ChatGPT analysis: "Based on this feedback, generate improvement suggestions for Teacher X"</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Classroom Monitoring (Automated Approach):</strong>
+                            <ul>
+                                <li>Use <strong>Zoom/Teams</strong> if classes are hybrid - record sessions</li>
+                                <li>Process recordings with <strong>Whisper API</strong> (transcription)</li>
+                                <li>Analyze with ChatGPT: "Analyze this transcript and rate: 1) Student engagement 2) Clarity of explanation 3) Time management 4) Question handling"</li>
+                                <li><strong>Note:</strong> This requires privacy considerations and teacher buy-in</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Behavioral Monitoring:</strong>
+                            <ul>
+                                <li>Simple incident tracking form (Google Forms)</li>
+                                <li>Captures: Staff member, situation, behavior observed</li>
+                                <li>Monthly pattern analysis with ChatGPT</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Assessments (Myers-Briggs/Big 5):</strong>
+                            <ul>
+                                <li>Use existing tools: <strong>16Personalities.com</strong> (free Myers-Briggs equivalent)</li>
+                                <li>For Big 5: <strong>Truity.com</strong> or <strong>PersonalityLab</strong></li>
+                                <li>Create custom training module recommendations using ChatGPT based on personality type</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Google Forms</span>
+                                <span class="tool-tag">Looker Studio</span>
+                                <span class="tool-tag">Whisper API</span>
+                                <span class="tool-tag">ChatGPT API</span>
+                                <span class="tool-tag">16Personalities</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ACADEMIC SECTION -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>Academic</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+
+                <div class="item">
+                    <div class="item-title">1. Automatic Evaluation of Slip Tests</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Once scanned scripts are provided, grade the individual scripts</li>
+                            <li>Mark the scripts with a tick or cross if answer is correct or wrong</li>
+                            <li>Provide a detailed analysis for each child</li>
+                            <li>Provide a dashboard across all students for the teacher</li>
+                            <li>Send the copy of the graded script with marks to the parent via the Knowvo ERP package</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level3">Level 3: Innovation</span>
+                        <div class="solution-details">
+                            <strong>For MCQ Tests:</strong>
+                            <ul>
+                                <li>Already using OMR - continue with Addmen</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">For Written Tests:</strong>
+                            <ul>
+                                <li><strong>OCR + AI Evaluation:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li>Scan answer sheets → PDFs</li>
+                                        <li>Use <strong>GPT-5 Vision API</strong> or <strong>Claude 3.5 Sonnet</strong> (better for images)</li>
+                                        <li>Send image with prompt: "This is an answer to [question]. The correct answer is [answer key]. Grade this out of [marks] and provide: 1) Score 2) What's correct 3) What's missing 4) Suggestions"</li>
+                                        <li>Compile results in spreadsheet</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Existing Products:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li><strong>Gradescope</strong> - AI-assisted grading for STEM subjects</li>
+                                        <li><strong>Microsoft OneNote Class Notebooks</strong> - Has some auto-grading features</li>
+                                        <li><strong>Google Classroom</strong> - Auto-grading for certain question types</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <p><strong>Reality Check:</strong> AI grading for open-ended questions is still developing. Best for initial screening; human review recommended for final grades.</p>
+                            <div class="tools-list">
+                                <span class="tool-tag">GPT-5 Vision</span>
+                                <span class="tool-tag">Claude API</span>
+                                <span class="tool-tag">Gradescope</span>
+                                <span class="tool-tag">Zapier</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">2. Academic MIS</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Use the Addmen software to download test ID-wise marks from the OMR sheets uploaded by the campuses</li>
+                            <li>Consolidate all the marks</li>
+                            <li>Based on the specific test, we adjust the formulas and create the academic review deck, which includes information such as the number of students who fall under various All India Ranks (AIR), the toppers, and those in the Hall of Fame. This entire process takes around 2 hours</li>
+                            <li>Using the server/any platform, identify campuses not uploaded the data (As per requirements) and send an automatic reminder email to the respective campuses until the task is completed 100%</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Automated Data Collection:</strong>
+                            <ul>
+                                <li><strong>Step 1:</strong> If Addmen has API, use it. If not:
+                                    <ul style="margin-left: 20px;">
+                                        <li>Use Python script with Selenium to automate login and download</li>
+                                        <li>Schedule script to run daily (cron job or Google Cloud Functions)</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Step 2:</strong> Data lands in Google Sheets (master spreadsheet)</li>
+                                <li><strong>Step 3:</strong> Python script or Google Sheets formulas consolidate data, calculate AIR ranges, identify toppers</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Academic Review Deck (currently takes 2 hours):</strong>
+                            <ul>
+                                <li>Create Google Slides template with placeholders</li>
+                                <li>Use <strong>Google Apps Script</strong> to auto-populate slides from Sheets data</li>
+                                <li>Or use <strong>Zapier + Google Slides integration</strong></li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Campus Upload Reminders:</strong>
+                            <ul>
+                                <li>Track expected uploads in Google Sheets (campus, test ID, due date)</li>
+                                <li>Zapier checks daily: If upload missing → Send email reminder</li>
+                                <li>Escalate if needed (send to dean + MIS team)</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Python + Selenium</span>
+                                <span class="tool-tag">Google Apps Script</span>
+                                <span class="tool-tag">Google Sheets</span>
+                                <span class="tool-tag">Zapier</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">3. Automatic Retrieval of Results from NTA</div>
+                    <div class="item-description">
+                        <p>In recent days, the NTA website has frequently changed the captcha when we attempt to download students' results. This makes automation using VBA coding or macros quite challenging. We would like to understand whether this process can be automated using any advanced AI technology or coding.</p>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Captcha-Solving Options:</strong>
+                            <ul>
+                                <li><strong>Option 1 - Captcha Solving Service:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li>Use <strong>2Captcha</strong> or <strong>Anti-Captcha</strong> API</li>
+                                        <li>Python script sends captcha image → Service solves → Script continues</li>
+                                        <li>Cost: ~$1-3 per 1000 captchas</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Option 2 - Browser Automation with Human:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li>Use Playwright/Puppeteer to automate everything EXCEPT captcha</li>
+                                        <li>Script pauses, human solves captcha, script continues</li>
+                                        <li>Still saves 90% of time</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Option 3 - AI Captcha Solver:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li>If captcha is text-based: Use <strong>GPT-5 Vision</strong> to read it</li>
+                                        <li>Success rate varies (60-90% depending on captcha type)</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Python</span>
+                                <span class="tool-tag">Selenium</span>
+                                <span class="tool-tag">2Captcha API</span>
+                                <span class="tool-tag">GPT-5 Vision</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">4. Data Analysis with Presentation Template</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>If I provide the last 3 years of data, can I get the detailed analysis based on our requirements in the presentation template?</li>
+                            <li>Currently, ChatGPT will provide these analyses. However, based on our requirements, the analysis should be conducted with the same color template (professionally) and presented using the standard Deeksha Presentation Template</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Create a Custom GPT for Deeksha Data Analysis:</strong>
+                            <ul>
+                                <li><strong>Step 1:</strong> Go to ChatGPT → Create a new Custom GPT</li>
+                                <li><strong>Step 2:</strong> Upload Deeksha's branded presentation template (PowerPoint/Google Slides format)</li>
+                                <li><strong>Step 3:</strong> Configure the GPT with a detailed prompt that includes:
+                                    <ul style="margin-left: 20px;">
+                                        <li>Your specific analysis requirements (trend analysis, subject-wise performance, campus comparisons, AIR distribution, toppers, Hall of Fame)</li>
+                                        <li>Instructions to maintain Deeksha's color scheme and branding</li>
+                                        <li>Output format requirements (structured for presentations)</li>
+                                        <li>Example: "You are a data analyst for Deeksha. When given student performance data, analyze it and create a presentation following the uploaded template. Include: 1) Overall trends 2) Subject-wise breakdown 3) Campus comparisons 4) AIR distribution 5) Top performers. Use Deeksha's brand colors and maintain professional formatting."</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Step 4:</strong> Each time you need analysis, start a new chat with the Custom GPT and upload your data file</li>
+                                <li><strong>Step 5:</strong> The GPT will automatically analyze the data and generate insights formatted according to Deeksha's template</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Usage Workflow:</strong>
+                            <ul>
+                                <li>Open Custom GPT → Upload new data (Excel/CSV) → GPT analyzes and formats results</li>
+                                <li>Export the output and paste into your presentation template, or have the GPT generate slide content directly</li>
+                                <li>Review, make minor adjustments, and present</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">ChatGPT Plus</span>
+                                <span class="tool-tag">Custom GPTs</span>
+                                <span class="tool-tag">PowerPoint Template</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">5. OMR Test ID Creation and Upload Automation</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>Each week, we conduct a minimum of 25 to 40 question papers. For each question paper, we need to create a Test ID to upload the students' OMR sheets. To generate these Test IDs, we must provide specific information, including the level of difficulty, answer keys, scoring scheme, OMR pattern, test date, number of questions, and sections for creating the test, as well as the grade and board (CBSE/State, etc.)</li>
+                            <li>Currently, the MIS team takes approximately 20 minutes to create one Test ID. Given that the average paper consists of 40 questions, this means that creating Test IDs for 40-question papers takes about 13 hours. If we could automate this process, we would save a significant amount of time</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Check Addmen API First:</strong>
+                            <ul>
+                                <li>Contact Addmen support - do they have API for Test ID creation?</li>
+                                <li>If yes, this becomes a simple integration</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">If No API:</strong>
+                            <ul>
+                                <li><strong>Solution:</strong> Browser automation (Selenium/Playwright)</li>
+                                <li><strong>Setup:</strong>
+                                    <ul style="margin-left: 20px;">
+                                        <li>Create Google Form/Sheet where MIS team enters test details</li>
+                                        <li>Python script reads from Sheet</li>
+                                        <li>Script logs into Addmen, fills forms, creates Test ID</li>
+                                        <li>Logs Test ID back to Sheet</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Python</span>
+                                <span class="tool-tag">Selenium</span>
+                                <span class="tool-tag">Google Sheets</span>
+                                <span class="tool-tag">Streamlit</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">6. Tracking Student JEE and NEET Exam Credentials</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>We are currently in the process of collecting JEE Main application details from students. Each campus is required to submit 100% of their students' information. Currently, all campuses are sending the details in parts via email, and then the MIS team consolidates this information to track the status daily, which is a task assigned to TDS</li>
+                            <li>After receiving the status updates, the MIS team communicates this information to the deans of the respective campuses, indicating whether we have received 100% of the results or a specific percentage. This process will continue until we obtain 100% of the results</li>
+                            <li>If we could automate the process of sending emails, sharing status updates, and informing the MIS team when 100% of the results have been received, it would save approximately 3 to 4 hours of time each day, eliminating the need for manual follow-ups</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level1">Level 1: Automation</span>
+                        <div class="solution-details">
+                            <strong>Centralized Collection System:</strong>
+                            <ul>
+                                <li><strong>Step 1:</strong> Create Google Form (or Typeform for better UX)</li>
+                                <li><strong>Step 2:</strong> Responses auto-populate Google Sheets with campus-wise tabs</li>
+                                <li><strong>Step 3:</strong> Create pivot table or formula to calculate completion percentage</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Automated Reminders:</strong>
+                            <ul>
+                                <li>Zapier checks Sheet daily at 9 AM</li>
+                                <li>If campus < 100% completion: Send email to campus dean listing missing students</li>
+                                <li>When campus reaches 100%: Send confirmation email and stop reminders</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">Google Forms</span>
+                                <span class="tool-tag">Google Sheets</span>
+                                <span class="tool-tag">Zapier</span>
+                                <span class="tool-tag">Looker Studio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">7. Process Optimization</div>
+                    <div class="item-description">
+                        <ul>
+                            <li>If I key in the MIS deliverables and tasks of the year, can AI suggest how to save time, saving & Manpower, etc</li>
+                            <li>We have data regarding the daily MIS tasks, including the time spent on each task, the number of personnel required, and any ad-hoc tasks. If I provide these details to AI, can it suggest ways to save time and reduce manpower costs?</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>One-Time Analysis:</strong>
+                            <ul>
+                                <li>Document all MIS tasks in spreadsheet (task name, time spent, people, frequency, tools)</li>
+                                <li>Upload to ChatGPT with prompt: "Analyze these MIS tasks. For each, suggest: 1) Automation opportunity 2) Potential time savings 3) Tools/methods 4) Implementation difficulty 5) Priority"</li>
+                                <li>Get comprehensive optimization roadmap</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Custom GPT Option:</strong>
+                            <ul>
+                                <li>Create a custom GPT trained on educational sector best practices and MIS optimization</li>
+                                <li>MIS team can query anytime: "How can we optimize [specific task]?"</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">ChatGPT Plus</span>
+                                <span class="tool-tag">Claude</span>
+                                <span class="tool-tag">Google Sheets</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">8. File Conversion (PDF with MathType/ChemSketch to Word)</div>
+                    <div class="item-description">
+                        <p>Converting the pdf files (which is with Math Type & Chem Sketch) into editable (including Math Type & Chem Sketch) word file without additional cost.</p>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Existing Tools:</strong>
+                            <ul>
+                                <li><strong>Mathpix Snip</strong> - Converts math equations from PDFs to LaTeX/Word (Free tier: 50 snips/month, Paid: $4.99/month unlimited, API available)</li>
+                                <li><strong>Adobe Acrobat Pro</strong> - Decent PDF to Word conversion (may need manual formula fixes)</li>
+                                <li><strong>ABBYY FineReader</strong> - Better OCR, handles equations somewhat</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Simplest Workflow:</strong>
+                            <ul>
+                                <li>Use <strong>Mathpix</strong> for math-heavy documents</li>
+                                <li>Manual touch-up in Word (MathType add-in)</li>
+                                <li>For chemistry, may need manual redrawing in ChemSketch</li>
+                            </ul>
+                            <p><strong>Reality Check:</strong> 100% accurate conversion is hard. Expect 80-90% accuracy + manual review.</p>
+                            <div class="tools-list">
+                                <span class="tool-tag">Mathpix</span>
+                                <span class="tool-tag">GPT-5 Vision</span>
+                                <span class="tool-tag">Pandoc</span>
+                                <span class="tool-tag">ABBYY FineReader</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">9. Historical Paper Analysis</div>
+                    <div class="item-description">
+                        <p>Analyze last 5 years papers and highlight topics and concepts of importance across the three subjects.</p>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Manual Approach (Quick Start):</strong>
+                            <ul>
+                                <li>Collect past papers (PDFs)</li>
+                                <li>Upload to ChatGPT (supports PDFs)</li>
+                                <li>Prompt: "Analyze these 5 years of JEE Main papers. For each subject, identify: 1) Most frequently tested topics 2) Difficulty trend 3) Weightage distribution 4) Emerging topics"</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Automated Approach:</strong>
+                            <ul>
+                                <li>Convert papers to text (OCR if needed - use Mathpix for equations)</li>
+                                <li>Python script extracts questions and classifies by topic (using GPT-5 API)</li>
+                                <li>Track frequency over 5 years and generate visualizations</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">ChatGPT Plus</span>
+                                <span class="tool-tag">Python</span>
+                                <span class="tool-tag">GPT-5 API</span>
+                                <span class="tool-tag">Mathpix</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">10. Auto-Generate Question Paper Versions with Same Difficulty</div>
+                    <div class="item-description">
+                        <p>Auto Generating different version (5) of Question Papers (QP) with the SAME Level of Difficulty (LOD) – using the given QP for JEE/NEET/CET courses. I will provide the Level of difficulty, based on the LOD, I need Question papers. (Not randomly provide a question paper)</p>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Simple GPT Approach:</strong>
+                            <ul>
+                                <li>Prompt: "Here's a JEE Main physics question paper. Generate 5 alternative versions with same topics, difficulty level, marks distribution, and cognitive level"</li>
+                                <li>Review and refine outputs</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Better Approach (Question Bank System):</strong>
+                            <ul>
+                                <li><strong>Step 1:</strong> Build question bank in Airtable/Database with metadata</li>
+                                <li><strong>Step 2:</strong> Python script generates variants automatically by matching tags and difficulty</li>
+                                <li><strong>Step 3:</strong> For gaps, use GPT-5 to generate new questions</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">ChatGPT API</span>
+                                <span class="tool-tag">Python</span>
+                                <span class="tool-tag">Airtable</span>
+                                <span class="tool-tag">LaTeX</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="item-title">11. Generate Question Paper by Chapter/Topic and LOD</div>
+                    <div class="item-description">
+                        <p>Generate a Question Paper based on the given chapter/topic and LOD for different course (JEE/NEET/CET).</p>
+                    </div>
+
+                    <div class="solution">
+                        <div class="solution-label">Simplest Solution</div>
+                        <span class="solution-type type-level2">Level 2: Intelligence</span>
+                        <div class="solution-details">
+                            <strong>Immediate Solution (GPT-5):</strong>
+                            <ul>
+                                <li>Create detailed prompt template: "Generate a JEE Advanced question paper on [topic] with [difficulty level]. Include 20 questions, answer key and solutions."</li>
+                                <li>Review and edit outputs</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Web Interface Solution:</strong>
+                            <ul>
+                                <li>Build simple form (using Streamlit): Select course, subject, chapter, difficulty, question types</li>
+                                <li>Backend: Python + GPT-5 API generates paper</li>
+                                <li>Output: Downloadable PDF/Word with proper formatting</li>
+                            </ul>
+                            <strong style="display: block; margin-top: 15px;">Quality Control:</strong>
+                            <ul>
+                                <li>Always include human review for factual accuracy and difficulty calibration</li>
+                                <li>Track which AI-generated questions work well in tests</li>
+                            </ul>
+                            <div class="tools-list">
+                                <span class="tool-tag">GPT-5 API</span>
+                                <span class="tool-tag">Python</span>
+                                <span class="tool-tag">Streamlit</span>
+                                <span class="tool-tag">LaTeX/Word</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            header.classList.toggle('collapsed');
+            content.classList.toggle('collapsed');
+        }
+    </script>
+</body>
+</html>
